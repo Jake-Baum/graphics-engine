@@ -13,7 +13,10 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Resource Files\shaders">
+    <Filter Include="resources">
+      <UniqueIdentifier>{0e3c9f5f-0154-431d-b0ec-1fb26868c5d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources\shaders">
       <UniqueIdentifier>{d8337452-8dd1-49d0-b65d-6f89b52f256b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -24,5 +27,21 @@
     <ClCompile Include="..\..\..\..\..\Users\Jake\Downloads\glad\src\glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="shader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shader.fs">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="shader.vs">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
