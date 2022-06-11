@@ -12,6 +12,7 @@
 class Shader
 {
 private:
+	static const unsigned int INFO_LOG_MAX_LENGTH = 512;
 	static unsigned int compileShader(const char* shaderSource, GLenum type);
 	static unsigned int createShaderProgram(const std::vector<unsigned int> shaders);
 

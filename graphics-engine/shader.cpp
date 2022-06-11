@@ -10,8 +10,8 @@ unsigned int Shader::compileShader(const char* shaderSource, GLenum type)
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
 	if (!success)
 	{
-		char infoLog[512];
-		glGetShaderInfoLog(shader, 512, NULL, infoLog);
+		char infoLog[INFO_LOG_MAX_LENGTH];
+		glGetShaderInfoLog(shader, INFO_LOG_MAX_LENGTH, NULL, infoLog);
 		std::cout << "Fragment shader 2 failed to compile: " << infoLog << std::endl;
 		throw - 1;
 	}
@@ -35,8 +35,8 @@ unsigned int Shader::createShaderProgram(const std::vector<unsigned int> shaders
 	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
 	if (!success)
 	{
-		char infoLog[512];
-		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+		char infoLog[INFO_LOG_MAX_LENGTH];
+		glGetProgramInfoLog(shaderProgram, INFO_LOG_MAX_LENGTH, NULL, infoLog);
 		std::cout << "Failed to link shaders: " << infoLog << std::endl;
 		throw - 1;
 	}
