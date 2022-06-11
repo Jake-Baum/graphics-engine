@@ -12,7 +12,7 @@ unsigned int Shader::compileShader(const char* shaderSource, GLenum type)
 	{
 		char infoLog[INFO_LOG_MAX_LENGTH];
 		glGetShaderInfoLog(shader, INFO_LOG_MAX_LENGTH, NULL, infoLog);
-		std::cout << "Fragment shader 2 failed to compile: " << infoLog << std::endl;
+		std::cout << "Shader failed to compile: " << infoLog << std::endl;
 		throw - 1;
 	}
 

@@ -12,6 +12,7 @@ const int WINDOW_HEIGHT = 600;
 GLFWwindow* createWindow(const char* title, const unsigned int width = WINDOW_WIDTH, const unsigned int height = WINDOW_HEIGHT);
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
+void loadImage(const char* filePath, GLenum target, GLenum format);
 
 int main()
 {
@@ -58,29 +59,21 @@ int main()
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-		int width, height, numberOfChannels;
-		unsigned char* data = stbi_load("wall.jpg", &width, &height, &numberOfChannels, 0);
-		if (!data)
-		{
-			std::cout << "Failed to load texture wall.jpg" << std::endl;
-			throw - 1;
-		}
-		unsigned int texture;
-		glGenTextures(1, &texture);
-		glBindTexture(GL_TEXTURE_2D, texture);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-		stbi_image_free(data);
+		loadImage("wall.jpg", GL_TEXTURE0, GL_RGB);
+		loadImage("awesomeface.png", GL_TEXTURE1, GL_RGBA);
 
-		//Rendering loop
+		shader.use();
+		shader.setInt("texture1", 0);
+		shader.setInt("texture2", 1);
+
+
+	//Rendering loop
 		while (!glfwWindowShouldClose(window))
 		{
 			processInput(window);
 
 			glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT);
-
-			shader.use();
 
 			glBindVertexArray(vao);
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -147,4 +140,27 @@ GLFWwindow* createWindow(const char* title, const unsigned int width, const unsi
 	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback); //Change viewport when window size is changed
 
 	return window;
+}
+
+void loadImage(const char* filePath, GLenum target, GLenum format)
+{
+	stbi_set_flip_vertically_on_load(true);
+
+	int width, height, numberOfChannels;
+	unsigned char* data = stbi_load(filePath, &width, &height, &numberOfChannels, 0);
+	if (!data)
+	{
+		std::cout << "Failed to load texture " << filePath << std::endl;
+		throw - 1;
+	}
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	unsigned int texture;
+	glGenTextures(1, &texture);
+	glActiveTexture(target);
+	glBindTexture(GL_TEXTURE_2D, texture);
+
+	stbi_image_free(data);
 }
