@@ -14,11 +14,6 @@
 
 class Shader
 {
-private:
-	static const unsigned int INFO_LOG_MAX_LENGTH = 512;
-	static unsigned int compileShader(const char* shaderSource, GLenum type);
-	static unsigned int createShaderProgram(const std::vector<unsigned int> shaders);
-
 public:
 	unsigned int id;
 
@@ -31,6 +26,11 @@ public:
 	void setInt(const std::string& name, int value) const;
 	void setFloat(const std::string& name, float value) const;
 	void setMatrix(const std::string& name, glm::mat4 matrix) const;
+
+private:
+	static const unsigned int INFO_LOG_MAX_LENGTH = 512;
+	static unsigned int compileShader(const char* shaderSource, GLenum type);
+	static unsigned int createShaderProgram(const std::vector<unsigned int> shaders);
 };
 
 #endif
