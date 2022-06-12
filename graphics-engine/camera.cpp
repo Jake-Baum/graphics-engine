@@ -46,11 +46,11 @@ void Camera::processKeyboard(Movement direction, float deltaTime)
 	}
 	if (direction == Movement::UP)
 	{
-		position += up * velocity;
+		position += worldUp * velocity;
 	}
 	if (direction == Movement::DOWN)
 	{
-		position -= up * velocity;
+		position -= worldUp * velocity;
 	}
 }
 
