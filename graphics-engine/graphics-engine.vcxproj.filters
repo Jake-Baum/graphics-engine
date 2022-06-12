@@ -44,17 +44,17 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="shader.fs">
-      <Filter>Source Files</Filter>
+      <Filter>resources\shaders</Filter>
     </None>
     <None Include="shader.vs">
-      <Filter>Source Files</Filter>
+      <Filter>resources\shaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="wall.jpg">
       <Filter>Source Files</Filter>
     </Image>
-    <Image Include="..\..\..\..\..\Users\Jake\AppData\Local\Temp\awesomeface.png">
+    <Image Include="awesomeface.png">
       <Filter>Source Files</Filter>
     </Image>
   </ItemGroup>
