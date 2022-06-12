@@ -41,8 +41,8 @@ int main()
 		glEnable(GL_DEPTH_TEST);
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-		Shader shader("shader.vs", "shader.fs");
-		Shader lightingShader("shader.vs", "light-shader.fs");
+		Shader shader("shader.vert", "shader.frag");
+		Shader lightingShader("shader.vert", "light-shader.frag");
 
 		float vertices[] = {
 		// positions          // normals           // texture coords
@@ -121,6 +121,19 @@ int main()
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 		glEnableVertexAttribArray(0);
 
+		glm::vec3 cubePositions[] = {
+			glm::vec3(0.0f,  0.0f,  0.0f),
+			glm::vec3(2.0f,  5.0f, -15.0f),
+			glm::vec3(-1.5f, -2.2f, -2.5f),
+			glm::vec3(-3.8f, -2.0f, -12.3f),
+			glm::vec3(2.4f, -0.4f, -3.5f),
+			glm::vec3(-1.7f,  3.0f, -7.5f),
+			glm::vec3(1.3f, -2.0f, -2.5f),
+			glm::vec3(1.5f,  2.0f, -2.5f),
+			glm::vec3(1.5f,  0.2f, -1.5f),
+			glm::vec3(-1.3f,  1.0f, -1.5f)
+		};
+
 		//Rendering loop
 		while (!glfwWindowShouldClose(window))
 		{
@@ -147,31 +160,42 @@ int main()
 			glBindVertexArray(lightVao);
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 
-			shader.use();
-			model = glm::mat4(1.0f);
-			shader.setMat4("model", model);
-			shader.setMat4("view", camera.getViewMatrix());
-			shader.setMat4("projection", projection);
-			shader.setVec3("viewPosition", camera.position);
-			
-			shader.setInt("material.diffuse", 0);
-			shader.setInt("material.specular", 1);
-			shader.setFloat("material.shininess", 64.0f);
-
-			glm::vec3 lightColor = glm::vec3(1.0f);
-			glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
-			glm::vec3 ambientColor = diffuseColor * glm::vec3(0.5f);
-			shader.setVec3("light.position", lightPosition);
-			shader.setVec3("light.ambient", ambientColor);
-			shader.setVec3("light.diffuse", diffuseColor);
-			shader.setVec3("light.specular", glm::vec3(1.0f));
 
 			glBindVertexArray(vao);
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D, containerTexture);
 			glActiveTexture(GL_TEXTURE1);
 			glBindTexture(GL_TEXTURE_2D, containerSpecularTexture);
-			glDrawArrays(GL_TRIANGLES, 0, 36);
+			shader.use();
+			for (glm::vec3 cubePosition : cubePositions)
+			{
+				model = glm::translate(glm::mat4(1.0f), cubePosition);
+				shader.setMat4("model", model);
+				shader.setMat4("view", camera.getViewMatrix());
+				shader.setMat4("projection", projection);
+				shader.setVec3("viewPosition", camera.position);
+
+				shader.setInt("material.diffuse", 0);
+				shader.setInt("material.specular", 1);
+				shader.setFloat("material.shininess", 64.0f);
+
+				glm::vec3 lightColor = glm::vec3(1.0f);
+				glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
+				glm::vec3 ambientColor = diffuseColor * glm::vec3(0.5f);
+				shader.setVec3("light.position", camera.position);
+				shader.setVec3("light.direction", camera.front);
+				shader.setFloat("light.cutOff", glm::cos(glm::radians(7.5f)));
+				shader.setFloat("light.outerCutOff", glm::cos(glm::radians(12.5f)));
+
+				shader.setVec3("light.ambient", ambientColor);
+				shader.setVec3("light.diffuse", diffuseColor);
+				shader.setVec3("light.specular", glm::vec3(1.0f));
+				
+				shader.setFloat("light.constant", 1.0f);
+				shader.setFloat("light.linear", 0.09f);
+				shader.setFloat("light.quadratic", 0.032f);
+				glDrawArrays(GL_TRIANGLES, 0, 36);
+			}
 
 			glBindVertexArray(0);
 

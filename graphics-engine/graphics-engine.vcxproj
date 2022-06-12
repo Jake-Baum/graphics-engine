@@ -157,9 +157,9 @@
     <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="light-shader.fs" />
-    <None Include="shader.fs" />
-    <None Include="shader.vs" />
+    <None Include="light-shader.frag" />
+    <None Include="shader.frag" />
+    <None Include="shader.vert" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="awesomeface.png" />

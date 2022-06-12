@@ -52,13 +52,13 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shader.fs">
+    <None Include="shader.frag">
       <Filter>resources\shaders</Filter>
     </None>
-    <None Include="shader.vs">
+    <None Include="shader.vert">
       <Filter>resources\shaders</Filter>
     </None>
-    <None Include="light-shader.fs">
+    <None Include="light-shader.frag">
       <Filter>resources\shaders</Filter>
     </None>
   </ItemGroup>
