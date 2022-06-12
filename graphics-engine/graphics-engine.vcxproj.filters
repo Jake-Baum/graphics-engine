@@ -19,6 +19,9 @@
     <Filter Include="resources\shaders">
       <UniqueIdentifier>{d8337452-8dd1-49d0-b65d-6f89b52f256b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="resources\images">
+      <UniqueIdentifier>{5e5a1cc5-27a3-4e09-9ea1-b8822ae5a27a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -60,11 +63,17 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="wall.jpg">
-      <Filter>Source Files</Filter>
+    <Image Include="container.png">
+      <Filter>resources\images</Filter>
+    </Image>
+    <Image Include="container_specular.png">
+      <Filter>resources\images</Filter>
     </Image>
     <Image Include="awesomeface.png">
-      <Filter>Source Files</Filter>
+      <Filter>resources\images</Filter>
+    </Image>
+    <Image Include="wall.jpg">
+      <Filter>resources\images</Filter>
     </Image>
   </ItemGroup>
 </Project>
