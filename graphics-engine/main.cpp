@@ -14,14 +14,35 @@ const int WINDOW_HEIGHT = 600;
 
 GLFWwindow* createWindow(const char* title, const unsigned int width = WINDOW_WIDTH, const unsigned int height = WINDOW_HEIGHT);
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
+void mouseCallback(GLFWwindow* window, double xPos, double yPos);
+void scrollCallback(GLFWwindow* window, double xOffset, double yOffset);
 void processInput(GLFWwindow* window);
 unsigned int loadImageAndGenerateTexture(const char* filePath, GLenum format = GL_RGB);
+
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
+
+float lastX = 400, lastY = 300;
+
+float yaw = -90.0f;
+float pitch = 0.0f;
+float fov = 45.0f;
+
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 int main()
 {
 	try
 	{
 		GLFWwindow* window = createWindow("Interesting Title");
+		glfwSetFramebufferSizeCallback(window, framebufferSizeCallback); //Change viewport when window size is changed
+		glfwSetCursorPosCallback(window, mouseCallback);
+		glfwSetScrollCallback(window, scrollCallback);
+
+		glEnable(GL_DEPTH_TEST);
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 		Shader shader("shader.vs", "shader.fs");
 
@@ -74,11 +95,6 @@ int main()
 			1, 2, 3    // second triangle
 		};
 
-		glm::mat4 view = glm::mat4(1.0f);
-		view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-
-		glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.0f);
-
 		unsigned int vbo, vao, ebo;
 		glGenVertexArrays(1, &vao);
 		glGenBuffers(1, &vbo);
@@ -106,10 +122,8 @@ int main()
 		shader.setInt("texture1", 0);
 		shader.setInt("texture2", 1);
 
-		glEnable(GL_DEPTH_TEST);
-
 		glm::vec3 cubePositions[] = {
-				glm::vec3(0.0f,  0.0f,  0.0f),
+				glm::vec3(0.0f,  0.0f,  -1.0f),
 				glm::vec3(2.0f,  5.0f, -15.0f),
 				glm::vec3(-1.5f, -2.2f, -2.5f),
 				glm::vec3(-3.8f, -2.0f, -12.3f),
@@ -124,6 +138,10 @@ int main()
 		//Rendering loop
 		while (!glfwWindowShouldClose(window))
 		{
+			float currentFrame = glfwGetTime();
+			deltaTime = currentFrame - lastFrame;
+			lastFrame = currentFrame;
+
 			processInput(window);
 
 			glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -134,7 +152,16 @@ int main()
 			glActiveTexture(GL_TEXTURE1);
 			glBindTexture(GL_TEXTURE_2D, texture2);
 
+			glm::vec3 direction(cos(glm::radians(yaw)) * cos(glm::radians(pitch)),
+													sin(glm::radians(pitch)),
+													sin(glm::radians(yaw)) * cos(glm::radians(pitch)));
+			cameraFront = glm::normalize(direction);
+
+			glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+
 			shader.setMatrix("view", view);
+
+			glm::mat4 projection = glm::perspective(glm::radians(fov), (float)WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.0f);
 			shader.setMatrix("projection", projection);
 
 			glBindVertexArray(vao);
@@ -142,7 +169,7 @@ int main()
 			{
 				glm::mat4 model = glm::mat4(1.0f);
 				model = glm::translate(model, cube);
-				model = glm::rotate(model, (float)glfwGetTime() * glm::radians(20.0f * cube.x), glm::vec3(cube.x, cube.y, cube.z));
+				model = glm::rotate(model, (float)glfwGetTime() * glm::radians(20.0f * cube.x), cube);
 
 				shader.setMatrix("model", model);
 				//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -175,11 +202,80 @@ void framebufferSizeCallback(GLFWwindow* window, int width, int height)
 	glViewport(0, 0, width, height);
 }
 
+void mouseCallback(GLFWwindow* window, double xPos, double yPos)
+{
+	static bool firstMouse = true;
+	if (firstMouse)
+	{
+		lastX = xPos;
+		lastY = yPos;
+		firstMouse = false;
+	}
+
+	const float sensitivity = 0.1f;
+
+	float xOffset = (xPos - lastX) * sensitivity;
+	float yOffset = (lastY - yPos) * sensitivity;
+	lastX = xPos;
+	lastY = yPos;
+
+	yaw += xOffset;
+	pitch += yOffset;
+
+	if (pitch > 89.0f)
+	{
+		pitch = 89.0f;
+	}
+	if (pitch < -89.0f)
+	{
+		pitch = -89.0f;
+	}
+}
+
+void scrollCallback(GLFWwindow* window, double xOffset, double yOffset)
+{
+	fov -= (float)yOffset;
+	if (fov < 1.0f)
+	{
+		fov = 1.0f;
+	}
+	if (fov > 60.0f)
+	{
+		fov = 60.0f;
+	}
+}
+
 void processInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 	{
 		glfwSetWindowShouldClose(window, true);
+	}
+
+	const float cameraSpeed = 2.5f * deltaTime;
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+	{
+		cameraPos += cameraSpeed * cameraFront;
+	}
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+	{
+		cameraPos -= cameraSpeed * cameraFront;
+	}
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+	{
+		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+	}
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+	{
+		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+	}
+	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+	{
+		cameraPos += cameraSpeed * cameraUp;
+	}
+	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+	{
+		cameraPos -= cameraSpeed * cameraUp;
 	}
 }
 
@@ -209,7 +305,6 @@ GLFWwindow* createWindow(const char* title, const unsigned int width, const unsi
 
 	//Set viewport 
 	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
-	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback); //Change viewport when window size is changed
 
 	return window;
 }
