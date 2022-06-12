@@ -9,10 +9,10 @@ const float Camera::DEFAULT_ZOOM = 45.0f;
 Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch) 
 	: front(glm::vec3(0.0f, 0.0f, -1.0f)), movementSpeed(DEFAULT_SPEED), mouseSensitivity(DEFAULT_SENSITIVITY), zoom(DEFAULT_ZOOM)
 {
-	position = position;
+	this->position = position;
 	worldUp = up;
-	yaw = yaw;
-	pitch = pitch;
+	this->yaw = yaw;
+	this->pitch = pitch;
 	updateCameraVectors();
 }
 
@@ -22,7 +22,6 @@ Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float u
 
 glm::mat4 Camera::getViewMatrix()
 {
-	printf("%f %f %f | %f %f %f | %f %f %f\n", position.x, position.y, position.z, front.x, front.y, front.z, up.x, up.y, up.z);
 	return glm::lookAt(position, position + front, up);
 }
 

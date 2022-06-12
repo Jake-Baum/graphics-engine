@@ -55,6 +55,9 @@
     <None Include="shader.vs">
       <Filter>resources\shaders</Filter>
     </None>
+    <None Include="light-shader.fs">
+      <Filter>resources\shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="wall.jpg">
