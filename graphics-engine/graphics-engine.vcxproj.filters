@@ -22,6 +22,12 @@
     <Filter Include="resources\images">
       <UniqueIdentifier>{5e5a1cc5-27a3-4e09-9ea1-b8822ae5a27a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="resources\models">
+      <UniqueIdentifier>{7689d166-ca41-4def-850a-2f51a58b0a64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources\models\survival_guitar_backpack">
+      <UniqueIdentifier>{251e4ae9-79a9-4e8c-99f0-24f72edbb179}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -39,6 +45,12 @@
     <ClCompile Include="camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader.h">
@@ -48,6 +60,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -60,6 +78,9 @@
     </None>
     <None Include="light-shader.frag">
       <Filter>resources\shaders</Filter>
+    </None>
+    <None Include="backpack.mtl">
+      <Filter>resources\models\survival_guitar_backpack</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -75,5 +96,30 @@
     <Image Include="wall.jpg">
       <Filter>resources\images</Filter>
     </Image>
+    <Image Include="ao.jpg">
+      <Filter>resources\models\survival_guitar_backpack</Filter>
+    </Image>
+    <Image Include="diffuse.jpg">
+      <Filter>resources\models\survival_guitar_backpack</Filter>
+    </Image>
+    <Image Include="normal.png">
+      <Filter>resources\models\survival_guitar_backpack</Filter>
+    </Image>
+    <Image Include="roughness.jpg">
+      <Filter>resources\models\survival_guitar_backpack</Filter>
+    </Image>
+    <Image Include="specular.jpg">
+      <Filter>resources\models\survival_guitar_backpack</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="backpack.obj">
+      <Filter>resources\models\survival_guitar_backpack</Filter>
+    </Object>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="source_attribution.txt">
+      <Filter>resources\models\survival_guitar_backpack</Filter>
+    </Text>
   </ItemGroup>
 </Project>
