@@ -14,6 +14,50 @@
 const int WINDOW_WIDTH = 800;
 const int WINDOW_HEIGHT = 600;
 
+const float CUBE_VERTICES[] = {
+		-0.5f, -0.5f, -0.5f,
+		 0.5f, -0.5f, -0.5f,
+		 0.5f,  0.5f, -0.5f,
+		 0.5f,  0.5f, -0.5f,
+		-0.5f,  0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f,
+
+		-0.5f, -0.5f,  0.5f,
+		 0.5f, -0.5f,  0.5f,
+		 0.5f,  0.5f,  0.5f,
+		 0.5f,  0.5f,  0.5f,
+		-0.5f,  0.5f,  0.5f,
+		-0.5f, -0.5f,  0.5f,
+
+		-0.5f,  0.5f,  0.5f,
+		-0.5f,  0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f,
+		-0.5f, -0.5f, -0.5f,
+		-0.5f, -0.5f,  0.5f,
+		-0.5f,  0.5f,  0.5f,
+
+		 0.5f,  0.5f,  0.5f,
+		 0.5f,  0.5f, -0.5f,
+		 0.5f, -0.5f, -0.5f,
+		 0.5f, -0.5f, -0.5f,
+		 0.5f, -0.5f,  0.5f,
+		 0.5f,  0.5f,  0.5f,
+
+		-0.5f, -0.5f, -0.5f,
+		 0.5f, -0.5f, -0.5f,
+		 0.5f, -0.5f,  0.5f,
+		 0.5f, -0.5f,  0.5f,
+		-0.5f, -0.5f,  0.5f,
+		-0.5f, -0.5f, -0.5f,
+
+		-0.5f,  0.5f, -0.5f,
+		 0.5f,  0.5f, -0.5f,
+		 0.5f,  0.5f,  0.5f,
+		 0.5f,  0.5f,  0.5f,
+		-0.5f,  0.5f,  0.5f,
+		-0.5f,  0.5f, -0.5f,
+};
+
 GLFWwindow* createWindow(const char* title, const unsigned int width = WINDOW_WIDTH, const unsigned int height = WINDOW_HEIGHT);
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 void mouseCallback(GLFWwindow* window, double xPos, double yPos);
@@ -43,62 +87,11 @@ int main()
 		Shader shader("shader.vert", "shader.frag");
 		Shader lightingShader("shader.vert", "light-shader.frag");
 
-		float vertices[] = {
-				-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-				 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-				 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-				 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-				-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-				-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-
-				-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-				 0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-				 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-				 0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-				-0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-				-0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-
-				-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-				-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-				-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-				-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-				-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-				-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-
-				 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-				 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-				 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-				 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-				 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-				 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-
-				-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-				 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-				 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-				 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-				-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-				-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-
-				-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-				 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-				 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-				 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-				-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-				-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
-		};
-		unsigned int vbo, vao;
-		glGenVertexArrays(1, &vao);
+		unsigned int vbo;
 		glGenBuffers(1, &vbo);
 
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-		glBindVertexArray(vao);
-
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-		glEnableVertexAttribArray(1);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(CUBE_VERTICES), CUBE_VERTICES, GL_STATIC_DRAW);
 
 		unsigned int lightVao;
 
@@ -106,21 +99,8 @@ int main()
 		glBindVertexArray(lightVao);
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 		glEnableVertexAttribArray(0);
-
-		glm::vec3 cubePositions[] = {
-			glm::vec3(0.0f,  0.0f,  0.0f),
-			glm::vec3(2.0f,  5.0f, -15.0f),
-			glm::vec3(-1.5f, -2.2f, -2.5f),
-			glm::vec3(-3.8f, -2.0f, -12.3f),
-			glm::vec3(2.4f, -0.4f, -3.5f),
-			glm::vec3(-1.7f,  3.0f, -7.5f),
-			glm::vec3(1.3f, -2.0f, -2.5f),
-			glm::vec3(1.5f,  2.0f, -2.5f),
-			glm::vec3(1.5f,  0.2f, -1.5f),
-			glm::vec3(-1.3f,  1.0f, -1.5f)
-		};
 
 		glm::vec3 pointLightPositions[] = {
 			glm::vec3(0.7f,  0.2f,  2.0f)
@@ -200,7 +180,6 @@ int main()
 			glfwPollEvents();
 		}
 
-		glDeleteVertexArrays(1, &vao);
 		glDeleteBuffers(1, &vbo);
 		shader.del();
 
