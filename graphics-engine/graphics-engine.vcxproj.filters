@@ -76,11 +76,11 @@
     <None Include="shader.vert">
       <Filter>resources\shaders</Filter>
     </None>
-    <None Include="light-shader.frag">
-      <Filter>resources\shaders</Filter>
-    </None>
     <None Include="backpack.mtl">
       <Filter>resources\models\survival_guitar_backpack</Filter>
+    </None>
+    <None Include="constant-color.frag">
+      <Filter>resources\shaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

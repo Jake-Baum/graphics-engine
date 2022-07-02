@@ -164,7 +164,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="backpack.mtl" />
-    <None Include="light-shader.frag" />
+    <None Include="constant-color.frag" />
     <None Include="shader.frag" />
     <None Include="shader.vert" />
   </ItemGroup>

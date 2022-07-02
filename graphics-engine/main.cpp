@@ -83,9 +83,11 @@ int main()
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_STENCIL_TEST);
+		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
 		Shader shader("shader.vert", "shader.frag");
-		Shader lightingShader("shader.vert", "light-shader.frag");
+		Shader constantColorShader("shader.vert", "constant-color.frag");
 
 		unsigned int vbo;
 		glGenBuffers(1, &vbo);
@@ -116,27 +118,33 @@ int main()
 			processInput(window);
 
 			glClearColor(0.1f, 0.3f, 0.3f, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+			glStencilMask(0x00);
 
 			glm::mat4 model;
 			glm::mat4 projection = glm::perspective(glm::radians(camera.zoom), (float)WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.0f);
 
+			//Draw point light
 			glBindVertexArray(lightVao);
-			lightingShader.use();
+			constantColorShader.use();
+			constantColorShader.setVec4("color", glm::vec4(1.0f));
 			for (glm::vec3 pointLightPosition : pointLightPositions)
 			{
 				model = glm::mat4(1.0f);
 				model = glm::translate(model, pointLightPosition);
 				model = glm::scale(model, glm::vec3(0.1f));
-				lightingShader.setMat4("model", model);
-				lightingShader.setMat4("view", camera.getViewMatrix());
-				lightingShader.setMat4("projection", projection);
+				constantColorShader.setMat4("model", model);
+				constantColorShader.setMat4("view", camera.getViewMatrix());
+				constantColorShader.setMat4("projection", projection);
 
 				glDrawArrays(GL_TRIANGLES, 0, 36);
 			}
 
+			glStencilFunc(GL_ALWAYS, 1, 0xFF);
+			glStencilMask(0xFF);
+			//Draw backpack
 			shader.use();
-
 			model = glm::mat4(1.0f);
 			model = glm::translate(model, glm::vec3(0.0f));
 			model = glm::scale(model, glm::vec3(1.0f));
@@ -169,6 +177,21 @@ int main()
 			}
 
 			backpack.draw(shader);
+
+			//Draw outline
+			glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+			glStencilMask(0x00);
+			constantColorShader.use();
+			constantColorShader.setVec4("color", glm::vec4(0.75f, 0.75f, 0.2f, 1.0f));
+
+			model = glm::scale(model, glm::vec3(1.01f));
+			constantColorShader.setMat4("model", model);
+			constantColorShader.setMat4("projection", projection);
+			constantColorShader.setMat4("view", camera.getViewMatrix());
+			backpack.draw(constantColorShader);
+
+			glStencilMask(0xFF);
+			glStencilFunc(GL_ALWAYS, 0, 0xFF);
 
 			glBindVertexArray(0);
 			
