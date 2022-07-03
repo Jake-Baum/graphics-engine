@@ -5,6 +5,14 @@ Model::Model(const char* path)
 	loadModel(path);
 }
 
+Model::Model(std::vector<Mesh> meshes)
+{
+	this->meshes = meshes;
+}
+
+Model::Model(Mesh meshes ...) : Model(std::vector<Mesh>({meshes}))
+{}
+
 void Model::draw(Shader& shader)
 {
 	for (unsigned int i = 0; i < meshes.size(); i++) {
@@ -150,6 +158,8 @@ unsigned int Model::textureFromFile(const char* path)
 	case 4:
 		format = GL_RGBA;
 		break;
+	default:
+		throw - 1;
 	}
 
 	glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);

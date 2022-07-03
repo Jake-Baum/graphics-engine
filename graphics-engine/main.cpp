@@ -58,6 +58,13 @@ const float CUBE_VERTICES[] = {
 		-0.5f,  0.5f, -0.5f,
 };
 
+const std::vector<Vertex> PLANE_VERTICES = {
+	{glm::vec3(-0.5f, 0.0f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2()},
+	{glm::vec3(0.5f, 0.0f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2()},
+	{glm::vec3(-0.5f, 0.0f,  0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2()},
+	{glm::vec3(0.5f, 0.0f,  0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2()}
+};
+
 GLFWwindow* createWindow(const char* title, const unsigned int width = WINDOW_WIDTH, const unsigned int height = WINDOW_HEIGHT);
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 void mouseCallback(GLFWwindow* window, double xPos, double yPos);
@@ -67,7 +74,7 @@ void processInput(GLFWwindow* window);
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
-Camera camera(glm::vec3(0.0f, 0.0f, 5.0f));
+Camera camera(glm::vec3(0.0f, 1.0f, 5.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, -20.0f);
 float lastX = WINDOW_WIDTH / 2.0f;
 float lastY = WINDOW_HEIGHT / 2.0f;
 
@@ -107,6 +114,12 @@ int main()
 		std::cout << "Loading model..." << std::endl;
 		Model backpack = Model("backpack.obj");
 		std::cout << "Model Loaded" << std::endl;
+
+		Model plane = Model(
+			Mesh(std::vector<Vertex>({PLANE_VERTICES}),
+					 std::vector<unsigned int>({0, 1, 2, 1, 2, 3}),
+					 std::vector<Texture>())
+		);
 		
 		//Rendering loop
 		while (!glfwWindowShouldClose(window))
@@ -141,12 +154,19 @@ int main()
 				glDrawArrays(GL_TRIANGLES, 0, 36);
 			}
 
+			model = glm::mat4(1.0f);
+			model = glm::scale(model, glm::vec3(10.0f));
+			constantColorShader.setVec4("color", glm::vec4(0.5f));
+			constantColorShader.setMat4("model", model);
+			plane.draw(constantColorShader);
+
+
 			glStencilFunc(GL_ALWAYS, 1, 0xFF);
 			glStencilMask(0xFF);
 			//Draw backpack
 			shader.use();
 			model = glm::mat4(1.0f);
-			model = glm::translate(model, glm::vec3(0.0f));
+			model = glm::translate(model, glm::vec3(0.0f, 2.0f, 0.0f));
 			model = glm::scale(model, glm::vec3(1.0f));
 			shader.setMat4("model", model);
 			shader.setMat4("projection", projection);
