@@ -111,6 +111,12 @@
     <Image Include="specular.jpg">
       <Filter>resources\models\survival_guitar_backpack</Filter>
     </Image>
+    <Image Include="grass.png">
+      <Filter>resources\images</Filter>
+    </Image>
+    <Image Include="blending_transparent_window.png">
+      <Filter>resources\images</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Object Include="backpack.obj">

@@ -1,5 +1,8 @@
 #include "mesh.h"
 
+const char* Mesh::TEXTURE_DIFFUSE = "textureDiffuse";
+const char* Mesh::TEXTURE_SPECULAR = "textureSpecular";
+
 Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures)
 {
     this->vertices = vertices;
@@ -19,11 +22,11 @@ void Mesh::draw(Shader& shader)
     // retrieve texture number (the N in diffuse_textureN)
     std::string number;
     std::string name = textures[i].type;
-    if (name == "textureDiffuse")
+    if (name == TEXTURE_DIFFUSE)
     {
       number = std::to_string(diffuseNr++);
     }
-    else if (name == "textureSpecular")
+    else if (name == TEXTURE_SPECULAR)
     {
       number = std::to_string(specularNr++);
     }

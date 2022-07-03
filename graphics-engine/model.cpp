@@ -87,10 +87,10 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 	if (mesh->mMaterialIndex >= 0)
 	{
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-		std::vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "textureDiffuse");
+		std::vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, Mesh::TEXTURE_DIFFUSE);
 		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 		
-		std::vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "textureSpecular");
+		std::vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, Mesh::TEXTURE_SPECULAR);
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 	}
 
@@ -127,6 +127,22 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType 
 	return textures;
 }
 
+unsigned int Model::constantColorTexture(glm::vec4 color, glm::vec2 dimensions)
+{
+	std::vector<unsigned char> data;
+
+	for (int i = 0; i < dimensions.x * dimensions.y; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			data.push_back(color[j]);
+		}
+	}
+
+	return generateAndBindTexture(&data[0], GL_RGBA, dimensions.x, dimensions.y);
+}
+
+
 unsigned int Model::textureFromFile(const char* path)
 {
 	stbi_set_flip_vertically_on_load(true);
@@ -138,13 +154,6 @@ unsigned int Model::textureFromFile(const char* path)
 		std::cout << "Failed to load texture " << path << ": " << stbi_failure_reason() << std::endl;
 		throw - 1;
 	}
-
-	unsigned int texture;
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	GLenum format;
 	switch (numberOfChannels)
@@ -162,10 +171,26 @@ unsigned int Model::textureFromFile(const char* path)
 		throw - 1;
 	}
 
-	glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-	glGenerateMipmap(GL_TEXTURE_2D);
+	unsigned int texture = generateAndBindTexture(data, format, width, height);
 
 	stbi_image_free(data);
+
+	return texture;
+}
+
+unsigned int Model::generateAndBindTexture(unsigned char* data, GLenum format, unsigned int width, unsigned int height)
+{
+	unsigned int texture;
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+	glGenerateMipmap(GL_TEXTURE_2D);
 
 	return texture;
 }

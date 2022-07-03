@@ -24,6 +24,9 @@ struct Texture
 class Mesh
 {
 public:
+	static const char* TEXTURE_DIFFUSE;
+	static const char* TEXTURE_SPECULAR;
+
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices;
 	std::vector<Texture> textures;

@@ -16,10 +16,13 @@
 class Model 
 {
 public:
+
 	Model(const char* path);
 	Model(std::vector<Mesh> meshes);
 	Model(Mesh meshes...);
 
+	static unsigned int textureFromFile(const char* path);
+	static unsigned int constantColorTexture(glm::vec4 color, glm::vec2 dimensions);
 	void draw(Shader& shader);
 
 private:
@@ -31,7 +34,7 @@ private:
 	void processNode(aiNode* node, const aiScene* scene);
 	Mesh processMesh(aiMesh* mesh, const aiScene* scene);
 	std::vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName);
-	unsigned int textureFromFile(const char* path);
+	static unsigned int generateAndBindTexture(unsigned char* data, GLenum format, unsigned int width, unsigned int height);
 	std::optional<Texture> getLoadedTexture(const char* path);
 };
 #endif

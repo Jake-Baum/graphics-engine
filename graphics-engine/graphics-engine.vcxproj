@@ -171,9 +171,11 @@
   <ItemGroup>
     <Image Include="ao.jpg" />
     <Image Include="awesomeface.png" />
+    <Image Include="blending_transparent_window.png" />
     <Image Include="container.png" />
     <Image Include="container_specular.png" />
     <Image Include="diffuse.jpg" />
+    <Image Include="grass.png" />
     <Image Include="normal.png" />
     <Image Include="roughness.jpg" />
     <Image Include="specular.jpg" />

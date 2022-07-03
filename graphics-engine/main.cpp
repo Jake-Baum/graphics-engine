@@ -2,6 +2,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <vector>
+#include <map>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -59,11 +60,13 @@ const float CUBE_VERTICES[] = {
 };
 
 const std::vector<Vertex> PLANE_VERTICES = {
-	{glm::vec3(-0.5f, 0.0f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2()},
-	{glm::vec3(0.5f, 0.0f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2()},
-	{glm::vec3(-0.5f, 0.0f,  0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2()},
-	{glm::vec3(0.5f, 0.0f,  0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2()}
+	{glm::vec3(-0.5f, 0.0f, 0.5f),  glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f)},
+	{glm::vec3(-0.5f, 0.0f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 1.0f)},
+	{glm::vec3( 0.5f, 0.0f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 1.0f)},
+	{glm::vec3( 0.5f, 0.0f, 0.5f),  glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f)}
 };
+
+const std::vector<unsigned int> PLANE_INDICES = {0, 1, 2, 0, 2, 3};
 
 GLFWwindow* createWindow(const char* title, const unsigned int width = WINDOW_WIDTH, const unsigned int height = WINDOW_HEIGHT);
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
@@ -90,8 +93,12 @@ int main()
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 		glEnable(GL_DEPTH_TEST);
+
 		glEnable(GL_STENCIL_TEST);
 		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		Shader shader("shader.vert", "shader.frag");
 		Shader constantColorShader("shader.vert", "constant-color.frag");
@@ -116,9 +123,59 @@ int main()
 		std::cout << "Model Loaded" << std::endl;
 
 		Model plane = Model(
-			Mesh(std::vector<Vertex>({PLANE_VERTICES}),
-					 std::vector<unsigned int>({0, 1, 2, 1, 2, 3}),
-					 std::vector<Texture>())
+			Mesh(
+				std::vector<Vertex>({PLANE_VERTICES}),
+				std::vector<unsigned int>(PLANE_INDICES),
+				std::vector<Texture>()
+			)
+		);
+
+		Model grass = Model(
+			Mesh(
+				std::vector<Vertex>({PLANE_VERTICES}),
+				std::vector<unsigned int>(PLANE_INDICES),
+				std::vector<Texture>({
+					{
+						Model::textureFromFile("grass.png"),
+						Mesh::TEXTURE_DIFFUSE,
+						"grass.png"
+					},
+					{
+						Model::constantColorTexture(glm::vec4(0.0f), glm::vec2(64.0f)),
+						Mesh::TEXTURE_SPECULAR,
+						"black.png"
+					}
+				})
+			)
+		);
+
+		Model transparentWindow = Model(
+			Mesh(
+				std::vector<Vertex>({PLANE_VERTICES}),
+				std::vector<unsigned int>(PLANE_INDICES),
+				std::vector<Texture>({
+					{
+						Model::textureFromFile("blending_transparent_window.png"),
+						Mesh::TEXTURE_DIFFUSE,
+						"blending_transparent_window.png"
+					},
+					{
+						Model::constantColorTexture(glm::vec4(200.0f), glm::vec2(64.0f)),
+						Mesh::TEXTURE_SPECULAR,
+						"black.png"
+					}
+				})
+			)
+		);
+
+		std::vector<glm::vec3> vegetation = std::vector<glm::vec3>(
+			{
+				glm::vec3( 1.5f, 0.5f,  0.51f),
+				glm::vec3( 0.5f, 0.5f, -0.6f),
+				glm::vec3(-1.5f, 0.5f, -0.48f),
+				glm::vec3(-0.3f, 0.5f, -2.3f),
+				glm::vec3( 0.0f, 0.5f,  0.7f),
+			}
 		);
 		
 		//Rendering loop
@@ -154,6 +211,7 @@ int main()
 				glDrawArrays(GL_TRIANGLES, 0, 36);
 			}
 
+			//Draw plane
 			model = glm::mat4(1.0f);
 			model = glm::scale(model, glm::vec3(10.0f));
 			constantColorShader.setVec4("color", glm::vec4(0.5f));
@@ -161,20 +219,8 @@ int main()
 			plane.draw(constantColorShader);
 
 
-			glStencilFunc(GL_ALWAYS, 1, 0xFF);
-			glStencilMask(0xFF);
-			//Draw backpack
+			//Set up lighting
 			shader.use();
-			model = glm::mat4(1.0f);
-			model = glm::translate(model, glm::vec3(0.0f, 2.0f, 0.0f));
-			model = glm::scale(model, glm::vec3(1.0f));
-			shader.setMat4("model", model);
-			shader.setMat4("projection", projection);
-			shader.setMat4("view", camera.getViewMatrix());
-
-			shader.setVec3("viewPosition", camera.position);
-			
-			shader.setFloat("material.shininess", 64.0f);
 
 			glm::vec3 lightColor = glm::vec3(1.0f);
 			glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
@@ -196,6 +242,20 @@ int main()
 				shader.setVec3("pointLights[" + std::to_string(i) + "].specular", glm::vec3(1.0f));
 			}
 
+			//Draw backpack
+			glStencilFunc(GL_ALWAYS, 1, 0xFF);
+			glStencilMask(0xFF);
+			model = glm::mat4(1.0f);
+			model = glm::scale(model, glm::vec3(0.2f));
+			model = glm::translate(model, glm::vec3(0.0f, 2.0f, -5.0f));
+			shader.setMat4("model", model);
+			shader.setMat4("projection", projection);
+			shader.setMat4("view", camera.getViewMatrix());
+
+			shader.setVec3("viewPosition", camera.position);
+			
+			shader.setFloat("material.shininess", 64.0f);
+
 			backpack.draw(shader);
 
 			//Draw outline
@@ -212,6 +272,36 @@ int main()
 
 			glStencilMask(0xFF);
 			glStencilFunc(GL_ALWAYS, 0, 0xFF);
+			
+			glClear(GL_STENCIL_BUFFER_BIT);
+			glStencilMask(0x00);
+
+			shader.use();
+
+			//Draw windows
+			std::map<float, glm::vec3> sorted;
+			for (auto& position : vegetation)
+			{
+				float distance = glm::length(camera.position - position);
+				sorted[distance] = position;
+			}
+
+			for (std::map<float, glm::vec3>::reverse_iterator it = sorted.rbegin(); it != sorted.rend(); ++it)
+			{
+				model = glm::mat4(1.0f);
+				model = glm::translate(model, it->second);
+				model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+				shader.setMat4("model", model);
+				shader.setMat4("projection", projection);
+				shader.setMat4("view", camera.getViewMatrix());
+
+				shader.setVec3("viewPosition", camera.position);
+
+				shader.setFloat("material.shininess", 64.0f);
+
+				transparentWindow.draw(shader);
+			}
 
 			glBindVertexArray(0);
 			
