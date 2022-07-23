@@ -73,6 +73,7 @@ void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 void mouseCallback(GLFWwindow* window, double xPos, double yPos);
 void scrollCallback(GLFWwindow* window, double xOffset, double yOffset);
 void processInput(GLFWwindow* window);
+double calculateFramerate();
 
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
@@ -181,6 +182,8 @@ int main()
 		//Rendering loop
 		while (!glfwWindowShouldClose(window))
 		{
+			glfwSetWindowTitle(window, ("Framerate: " + std::to_string(calculateFramerate())).c_str());
+
 			float currentFrame = glfwGetTime();
 			deltaTime = currentFrame - lastFrame;
 			lastFrame = currentFrame;
@@ -298,7 +301,7 @@ int main()
 
 				shader.setVec3("viewPosition", camera.position);
 
-				shader.setFloat("material.shininess", 64.0f);
+				shader.setFloat("material.shininess", 500.0f);
 
 				transparentWindow.draw(shader);
 			}
@@ -416,4 +419,23 @@ GLFWwindow* createWindow(const char* title, const unsigned int width, const unsi
 	glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	return window;
+}
+
+double calculateFramerate()
+{
+	static double lastTime = glfwGetTime();
+	static int framesCount = 0;
+	static double frameRate = 0.0f;
+
+	double currentTime = glfwGetTime();
+	framesCount++;
+
+	if (currentTime - lastTime >= 1.0f)
+	{
+		frameRate = framesCount / (currentTime - lastTime);
+		framesCount = 0;
+		lastTime = currentTime;
+	}
+
+	return frameRate;
 }
