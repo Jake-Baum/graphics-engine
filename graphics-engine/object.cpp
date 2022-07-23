@@ -1,12 +1,12 @@
 #include "object.h"
 
-Object::Object(Model model, Shader& shader, glm::vec3 position, glm::vec3 scale, float rotation, glm::vec3 rotationAxis):
-	model(model), position(position), scale(scale), rotation(rotation), rotationAxis(rotationAxis)
+Object::Object(Model model, Shader& shader, glm::vec3 position, glm::vec3 scale, float rotation, glm::vec3 rotationAxis, float shininess):
+	model(model), position(position), scale(scale), rotation(rotation), rotationAxis(rotationAxis), shininess(shininess)
 {
 	this->shader = &shader;
-	this->modelMatrix = glm::scale(this->modelMatrix, scale);
 	this->modelMatrix = glm::translate(this->modelMatrix, position);
-	this->modelMatrix = glm::rotate(this->modelMatrix, rotation, rotationAxis);
+	this->modelMatrix = glm::rotate(this->modelMatrix, glm::radians(rotation), rotationAxis);
+	this->modelMatrix = glm::scale(this->modelMatrix, scale);
 }
 
 void Object::draw()
@@ -19,6 +19,7 @@ void Object::draw()
 
 	shader->use();
 	shader->setMat4("model", modelMatrix);
+	shader->setFloat("material.shininess", shininess);
 	model.draw(*shader);
 
 	if (outlineShader.has_value())
@@ -37,6 +38,11 @@ void Object::draw()
 
 		glClear(GL_STENCIL_BUFFER_BIT);
 		glStencilMask(0x00);
+	}
+
+	if (light.has_value())
+	{
+		light.value().setLightUniforms();
 	}
 }
 

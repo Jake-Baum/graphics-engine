@@ -16,49 +16,18 @@
 const int WINDOW_WIDTH = 800;
 const int WINDOW_HEIGHT = 600;
 
-const float CUBE_VERTICES[] = {
-		-0.5f, -0.5f, -0.5f,
-		 0.5f, -0.5f, -0.5f,
-		 0.5f,  0.5f, -0.5f,
-		 0.5f,  0.5f, -0.5f,
-		-0.5f,  0.5f, -0.5f,
-		-0.5f, -0.5f, -0.5f,
-
-		-0.5f, -0.5f,  0.5f,
-		 0.5f, -0.5f,  0.5f,
-		 0.5f,  0.5f,  0.5f,
-		 0.5f,  0.5f,  0.5f,
-		-0.5f,  0.5f,  0.5f,
-		-0.5f, -0.5f,  0.5f,
-
-		-0.5f,  0.5f,  0.5f,
-		-0.5f,  0.5f, -0.5f,
-		-0.5f, -0.5f, -0.5f,
-		-0.5f, -0.5f, -0.5f,
-		-0.5f, -0.5f,  0.5f,
-		-0.5f,  0.5f,  0.5f,
-
-		 0.5f,  0.5f,  0.5f,
-		 0.5f,  0.5f, -0.5f,
-		 0.5f, -0.5f, -0.5f,
-		 0.5f, -0.5f, -0.5f,
-		 0.5f, -0.5f,  0.5f,
-		 0.5f,  0.5f,  0.5f,
-
-		-0.5f, -0.5f, -0.5f,
-		 0.5f, -0.5f, -0.5f,
-		 0.5f, -0.5f,  0.5f,
-		 0.5f, -0.5f,  0.5f,
-		-0.5f, -0.5f,  0.5f,
-		-0.5f, -0.5f, -0.5f,
-
-		-0.5f,  0.5f, -0.5f,
-		 0.5f,  0.5f, -0.5f,
-		 0.5f,  0.5f,  0.5f,
-		 0.5f,  0.5f,  0.5f,
-		-0.5f,  0.5f,  0.5f,
-		-0.5f,  0.5f, -0.5f,
+const std::vector<Vertex> CUBE_VERTICES = {
+	{glm::vec3(-0.5f, -0.5f, 0.5f), glm::normalize(glm::vec3(-1.0f, -1.0f, 1.0f)), glm::vec2()},
+	{glm::vec3(-0.5f, 0.5f, 0.5f), glm::normalize(glm::vec3(-1.0f, 1.0f, 1.0f)), glm::vec2()},
+	{glm::vec3(0.5f, 0.5f, 0.5f), glm::normalize(glm::vec3(1.0f, 1.0f, 1.0f)), glm::vec2()},
+	{glm::vec3(0.5f, -0.5f, 0.5f), glm::normalize(glm::vec3(1.0f, -1.0f, 1.0f)), glm::vec2()},
+	{glm::vec3(-0.5f, -0.5f, -0.5f), glm::normalize(glm::vec3(-1.0f, -1.0f, -1.0f)), glm::vec2()},
+	{glm::vec3(-0.5f, 0.5f, -0.5f), glm::normalize(glm::vec3(-1.0f, 1.0f, -1.0f)), glm::vec2()},
+	{glm::vec3(0.5f, 0.5f, -0.5f), glm::normalize(glm::vec3(1.0f, 1.0f, -1.0f)), glm::vec2()},
+	{glm::vec3(0.5f, -0.5f, -0.5f), glm::normalize(glm::vec3(1.0f, -1.0f, -1.0f)), glm::vec2()}
 };
+
+const std::vector<unsigned int> CUBE_INDICES = {0, 1, 2, 0, 2, 3, 4, 5, 1, 4, 1, 0, 7, 6, 5, 7, 5, 4, 3, 2, 6, 3, 6, 7, 4, 0, 3, 4, 3, 7, 1, 5, 6, 1, 6, 2};
 
 const std::vector<Vertex> PLANE_VERTICES = {
 	{glm::vec3(-0.5f, 0.0f, 0.5f),  glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f)},
@@ -105,23 +74,28 @@ int main()
 		Shader shader("shader.vert", "shader.frag");
 		Shader constantColorShader("shader.vert", "constant-color.frag");
 
-		unsigned int vbo;
-		glGenBuffers(1, &vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(CUBE_VERTICES), CUBE_VERTICES, GL_STATIC_DRAW);
-
-		unsigned int lightVao;
-		glGenVertexArrays(1, &lightVao);
-		glBindVertexArray(lightVao);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-		glEnableVertexAttribArray(0);
-
 		glm::vec3 pointLightPositions[] = {
 			glm::vec3(0.7f,  0.2f,  2.0f)
 		};
 
+		Model whiteCube = Model(
+			Mesh(
+				std::vector<Vertex>({CUBE_VERTICES}),
+				std::vector<unsigned int>(CUBE_INDICES),
+				std::vector<Texture>()
+			)
+		);
+		Object light = Object(
+			whiteCube,
+			constantColorShader,
+			glm::vec3(0.7f, 0.2f, 2.0f),
+			glm::vec3(0.1f)
+		);
+		PointLight pointLight = PointLight(glm::vec3(1.0f), light.getPosition(), shader);
+		light.light = std::optional(pointLight);
+
 		std::cout << "Loading model..." << std::endl;
-		Object backpack = Object(Model("backpack.obj"), shader, glm::vec3(0.0f, 2.0f, -5.0f), glm::vec3(0.2f));
+		Object backpack = Object(Model("backpack.obj"), shader, glm::vec3(0.0f, 0.5f, -1.0f), glm::vec3(0.2f));
 		backpack.outlineShader = std::optional(&constantColorShader);
 		std::cout << "Model Loaded" << std::endl;
 
@@ -179,11 +153,11 @@ int main()
 
 		std::vector<Object> windows = std::vector<Object>(
 			{
-				Object(transparentWindow, shader, glm::vec3( 1.5f, 0.5f,  0.51f), glm::vec3(1.0f), 90.0f, glm::vec3(1.0f, 0.0f, 0.0f)),
-				Object(transparentWindow, shader, glm::vec3( 0.5f, 0.5f, -0.6f), glm::vec3(1.0f), 90.0f, glm::vec3(1.0f, 0.0f, 0.0f)),
-				Object(transparentWindow, shader, glm::vec3(-1.5f, 0.5f, -0.48f), glm::vec3(1.0f), 90.0f, glm::vec3(1.0f, 0.0f, 0.0f)),
-				Object(transparentWindow, shader, glm::vec3(-0.3f, 0.5f, -2.3f), glm::vec3(1.0f), 90.0f, glm::vec3(1.0f, 0.0f, 0.0f)),
-				Object(transparentWindow, shader, glm::vec3( 0.0f, 0.5f,  0.7f), glm::vec3(1.0f), 90.0f, glm::vec3(1.0f, 0.0f, 0.0f)),
+				Object(transparentWindow, shader, glm::vec3( 1.5f, 0.5f,  0.51f), glm::vec3(1.0f), 90.0f, glm::vec3(1.0f, 0.0f, 0.0f), 500.0f),
+				Object(transparentWindow, shader, glm::vec3( 0.5f, 0.5f, -0.6f), glm::vec3(1.0f), 90.0f, glm::vec3(1.0f, 0.0f, 0.0f), 500.0f),
+				Object(transparentWindow, shader, glm::vec3(-1.5f, 0.5f, -0.48f), glm::vec3(1.0f), 90.0f, glm::vec3(1.0f, 0.0f, 0.0f), 500.0f),
+				Object(transparentWindow, shader, glm::vec3(-0.3f, 0.5f, -2.3f), glm::vec3(1.0f), 90.0f, glm::vec3(1.0f, 0.0f, 0.0f), 500.0f),
+				Object(transparentWindow, shader, glm::vec3( 0.0f, 0.5f,  0.7f), glm::vec3(1.0f), 90.0f, glm::vec3(1.0f, 0.0f, 0.0f), 500.0f),
 			}
 		);
 
@@ -208,22 +182,14 @@ int main()
 			glm::mat4 projection = glm::perspective(glm::radians(camera.zoom), (float)WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.0f);
 
 			//Draw point light
-			glBindVertexArray(lightVao);
 			constantColorShader.use();
 			constantColorShader.setVec4("color", glm::vec4(1.0f));
-			for (glm::vec3 pointLightPosition : pointLightPositions)
-			{
-				glm::mat4 model = glm::mat4(1.0f);
-				model = glm::translate(model, pointLightPosition);
-				model = glm::scale(model, glm::vec3(0.1f));
-				constantColorShader.setMat4("model", model);
-				constantColorShader.setMat4("view", camera.getViewMatrix());
-				constantColorShader.setMat4("projection", projection);
+			constantColorShader.setMat4("view", camera.getViewMatrix());
+			constantColorShader.setMat4("projection", projection);
+			light.draw();
 
-				glDrawArrays(GL_TRIANGLES, 0, 36);
-			}
-
-			//Draw plane
+			//Draw floor
+			constantColorShader.use();
 			constantColorShader.setVec4("color", glm::vec4(0.5f));
 			floor.draw();
 
@@ -239,24 +205,11 @@ int main()
 			shader.setVec3("directionalLight.diffuse", diffuseColor);
 			shader.setVec3("directionalLight.specular", glm::vec3(1.0f));
 
-			for (int i = 0; i < sizeof(pointLightPositions) / sizeof(pointLightPositions[0]); i++)
-			{
-				shader.setVec3("pointLights[" + std::to_string(i) + "].position", pointLightPositions[i]);
-				shader.setFloat("pointLights[" + std::to_string(i) + "].constant", 1.0f);
-				shader.setFloat("pointLights[" + std::to_string(i) + "].linear", 0.1f);
-				shader.setFloat("pointLights[" + std::to_string(i) + "].quadratic", 0.01f);
-				shader.setVec3("pointLights[" + std::to_string(i) + "].ambient", ambientColor);
-				shader.setVec3("pointLights[" + std::to_string(i) + "].diffuse", diffuseColor);
-				shader.setVec3("pointLights[" + std::to_string(i) + "].specular", glm::vec3(1.0f));
-			}
-
 			shader.setMat4("projection", projection);
 			shader.setMat4("view", camera.getViewMatrix());
 			shader.setVec3("viewPosition", camera.position);
 			
 			//Draw backpack
-			shader.setFloat("material.shininess", 64.0f);
-
 			backpack.draw();
 
 			//Draw windows
@@ -269,7 +222,6 @@ int main()
 
 			for (std::map<float, Object>::reverse_iterator it = sorted.rbegin(); it != sorted.rend(); ++it)
 			{
-				shader.setFloat("material.shininess", 500.0f);
 				it->second.draw();
 			}
 
@@ -279,7 +231,7 @@ int main()
 			glfwPollEvents();
 		}
 
-		glDeleteBuffers(1, &vbo);
+		//glDeleteBuffers(1, &vbo);
 		shader.del();
 		constantColorShader.del();
 

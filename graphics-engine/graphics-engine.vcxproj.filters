@@ -54,6 +54,9 @@
     <ClCompile Include="object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="point_light.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader.h">
@@ -74,7 +77,7 @@
     <ClInclude Include="object.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="light.h">
+    <ClInclude Include="point_light.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
