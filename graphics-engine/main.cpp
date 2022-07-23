@@ -11,6 +11,7 @@
 #include "shader.h"
 #include "camera.h"
 #include "model.h"
+#include "object.h"
 
 const int WINDOW_WIDTH = 800;
 const int WINDOW_HEIGHT = 600;
@@ -120,7 +121,8 @@ int main()
 		};
 
 		std::cout << "Loading model..." << std::endl;
-		Model backpack = Model("backpack.obj");
+		Object backpack = Object(Model("backpack.obj"), shader, glm::vec3(0.0f, 2.0f, -5.0f), glm::vec3(0.2f));
+		backpack.outlineShader = std::optional(&constantColorShader);
 		std::cout << "Model Loaded" << std::endl;
 
 		Model plane = Model(
@@ -129,6 +131,12 @@ int main()
 				std::vector<unsigned int>(PLANE_INDICES),
 				std::vector<Texture>()
 			)
+		);
+		Object floor = Object(
+			plane, 
+			constantColorShader, 
+			glm::vec3(0.0f),
+			glm::vec3(10.0f)
 		);
 
 		Model grass = Model(
@@ -169,15 +177,17 @@ int main()
 			)
 		);
 
-		std::vector<glm::vec3> vegetation = std::vector<glm::vec3>(
+		std::vector<Object> windows = std::vector<Object>(
 			{
-				glm::vec3( 1.5f, 0.5f,  0.51f),
-				glm::vec3( 0.5f, 0.5f, -0.6f),
-				glm::vec3(-1.5f, 0.5f, -0.48f),
-				glm::vec3(-0.3f, 0.5f, -2.3f),
-				glm::vec3( 0.0f, 0.5f,  0.7f),
+				Object(transparentWindow, shader, glm::vec3( 1.5f, 0.5f,  0.51f), glm::vec3(1.0f), 90.0f, glm::vec3(1.0f, 0.0f, 0.0f)),
+				Object(transparentWindow, shader, glm::vec3( 0.5f, 0.5f, -0.6f), glm::vec3(1.0f), 90.0f, glm::vec3(1.0f, 0.0f, 0.0f)),
+				Object(transparentWindow, shader, glm::vec3(-1.5f, 0.5f, -0.48f), glm::vec3(1.0f), 90.0f, glm::vec3(1.0f, 0.0f, 0.0f)),
+				Object(transparentWindow, shader, glm::vec3(-0.3f, 0.5f, -2.3f), glm::vec3(1.0f), 90.0f, glm::vec3(1.0f, 0.0f, 0.0f)),
+				Object(transparentWindow, shader, glm::vec3( 0.0f, 0.5f,  0.7f), glm::vec3(1.0f), 90.0f, glm::vec3(1.0f, 0.0f, 0.0f)),
 			}
 		);
+
+
 		
 		//Rendering loop
 		while (!glfwWindowShouldClose(window))
@@ -195,7 +205,6 @@ int main()
 
 			glStencilMask(0x00);
 
-			glm::mat4 model;
 			glm::mat4 projection = glm::perspective(glm::radians(camera.zoom), (float)WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.0f);
 
 			//Draw point light
@@ -204,7 +213,7 @@ int main()
 			constantColorShader.setVec4("color", glm::vec4(1.0f));
 			for (glm::vec3 pointLightPosition : pointLightPositions)
 			{
-				model = glm::mat4(1.0f);
+				glm::mat4 model = glm::mat4(1.0f);
 				model = glm::translate(model, pointLightPosition);
 				model = glm::scale(model, glm::vec3(0.1f));
 				constantColorShader.setMat4("model", model);
@@ -215,12 +224,8 @@ int main()
 			}
 
 			//Draw plane
-			model = glm::mat4(1.0f);
-			model = glm::scale(model, glm::vec3(10.0f));
 			constantColorShader.setVec4("color", glm::vec4(0.5f));
-			constantColorShader.setMat4("model", model);
-			plane.draw(constantColorShader);
-
+			floor.draw();
 
 			//Set up lighting
 			shader.use();
@@ -245,65 +250,27 @@ int main()
 				shader.setVec3("pointLights[" + std::to_string(i) + "].specular", glm::vec3(1.0f));
 			}
 
-			//Draw backpack
-			glStencilFunc(GL_ALWAYS, 1, 0xFF);
-			glStencilMask(0xFF);
-			model = glm::mat4(1.0f);
-			model = glm::scale(model, glm::vec3(0.2f));
-			model = glm::translate(model, glm::vec3(0.0f, 2.0f, -5.0f));
-			shader.setMat4("model", model);
 			shader.setMat4("projection", projection);
 			shader.setMat4("view", camera.getViewMatrix());
-
 			shader.setVec3("viewPosition", camera.position);
 			
+			//Draw backpack
 			shader.setFloat("material.shininess", 64.0f);
 
-			backpack.draw(shader);
-
-			//Draw outline
-			glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-			glStencilMask(0x00);
-			constantColorShader.use();
-			constantColorShader.setVec4("color", glm::vec4(0.75f, 0.75f, 0.2f, 1.0f));
-
-			model = glm::scale(model, glm::vec3(1.01f));
-			constantColorShader.setMat4("model", model);
-			constantColorShader.setMat4("projection", projection);
-			constantColorShader.setMat4("view", camera.getViewMatrix());
-			backpack.draw(constantColorShader);
-
-			glStencilMask(0xFF);
-			glStencilFunc(GL_ALWAYS, 0, 0xFF);
-			
-			glClear(GL_STENCIL_BUFFER_BIT);
-			glStencilMask(0x00);
-
-			shader.use();
+			backpack.draw();
 
 			//Draw windows
-			std::map<float, glm::vec3> sorted;
-			for (auto& position : vegetation)
+			std::map<float, Object> sorted;
+			for (auto& window : windows)
 			{
-				float distance = glm::length(camera.position - position);
-				sorted[distance] = position;
+				float distance = glm::length(camera.position - window.getPosition());
+				sorted.insert(std::make_pair(distance, window));
 			}
 
-			for (std::map<float, glm::vec3>::reverse_iterator it = sorted.rbegin(); it != sorted.rend(); ++it)
+			for (std::map<float, Object>::reverse_iterator it = sorted.rbegin(); it != sorted.rend(); ++it)
 			{
-				model = glm::mat4(1.0f);
-				model = glm::translate(model, it->second);
-				model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-
-				shader.setMat4("model", model);
-				shader.setMat4("projection", projection);
-				shader.setMat4("view", camera.getViewMatrix());
-
-				shader.setVec3("viewPosition", camera.position);
-
 				shader.setFloat("material.shininess", 500.0f);
-
-				transparentWindow.draw(shader);
+				it->second.draw();
 			}
 
 			glBindVertexArray(0);
@@ -314,6 +281,7 @@ int main()
 
 		glDeleteBuffers(1, &vbo);
 		shader.del();
+		constantColorShader.del();
 
 		glfwTerminate();
 		return 0;
