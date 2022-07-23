@@ -40,9 +40,14 @@ void Object::draw()
 		glStencilMask(0x00);
 	}
 
-	if (light.has_value())
+	for (int i = 0; i < directionalLights.size(); i++)
 	{
-		light.value().setLightUniforms();
+		directionalLights[i].setLightUniforms();
+	}
+
+	for (int i = 0; i < pointLights.size(); i++)
+	{
+		pointLights[i].setLightUniforms();
 	}
 }
 

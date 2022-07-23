@@ -6,6 +6,7 @@
 #include "model.h"
 #include "shader.h"
 #include "point_light.h"
+#include "directional_light.h"
 
 class Object
 {
@@ -16,14 +17,15 @@ public:
 				 glm::vec3 scale = glm::vec3(1.0f),
 				 float rotation = 0.0f,
 				 glm::vec3 rotationAxis = glm::vec3(0.0f, 1.0f, 0.0f),
-				 float shininess = 64.0f);
+				 float shininess = 0.0f);
 
 	void draw();
 	
 	glm::vec3 getPosition();
 
 	std::optional<Shader*> outlineShader;
-	std::optional<PointLight> light;
+	std::vector<DirectionalLight> directionalLights;
+	std::vector<PointLight> pointLights;
 
 private:
 	Model model;

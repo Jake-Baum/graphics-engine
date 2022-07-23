@@ -57,6 +57,9 @@
     <ClCompile Include="point_light.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="directional_light.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader.h">
@@ -78,6 +81,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="point_light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="directional_light.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
