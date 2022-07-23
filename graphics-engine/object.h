@@ -17,7 +17,10 @@ public:
 				 glm::vec3 scale = glm::vec3(1.0f),
 				 float rotation = 0.0f,
 				 glm::vec3 rotationAxis = glm::vec3(0.0f, 1.0f, 0.0f),
-				 float shininess = 0.0f);
+				 float shininess = 0.0f,
+				 bool shouldCullBackFaces = true);
+
+	Object(Model model, Shader& shader, float shininess);
 
 	void draw();
 	
@@ -36,5 +39,6 @@ private:
 	float rotation;
 	glm::vec3 rotationAxis;
 	float shininess;
+	bool shouldCullBackFaces;
 };
 #endif

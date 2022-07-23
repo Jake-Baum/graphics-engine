@@ -1,7 +1,7 @@
 #include "object.h"
 
-Object::Object(Model model, Shader& shader, glm::vec3 position, glm::vec3 scale, float rotation, glm::vec3 rotationAxis, float shininess):
-	model(model), position(position), scale(scale), rotation(rotation), rotationAxis(rotationAxis), shininess(shininess)
+Object::Object(Model model, Shader& shader, glm::vec3 position, glm::vec3 scale, float rotation, glm::vec3 rotationAxis, float shininess, bool shouldCullBackFaces):
+	model(model), position(position), scale(scale), rotation(rotation), rotationAxis(rotationAxis), shininess(shininess), shouldCullBackFaces(shouldCullBackFaces)
 {
 	this->shader = &shader;
 	this->modelMatrix = glm::translate(this->modelMatrix, position);
@@ -9,8 +9,20 @@ Object::Object(Model model, Shader& shader, glm::vec3 position, glm::vec3 scale,
 	this->modelMatrix = glm::scale(this->modelMatrix, scale);
 }
 
+Object::Object(Model model, Shader& shader, float shininess): Object(model, shader, glm::vec3(0.0f), glm::vec3(1.0f), 0.0f, glm::vec3(0.0f, 1.0f, 0.0f), shininess)
+{}
+
 void Object::draw()
 {
+	if (shouldCullBackFaces)
+	{
+		glEnable(GL_CULL_FACE);
+	}
+	else
+	{
+		glDisable(GL_CULL_FACE);
+	}
+
 	if (outlineShader.has_value())
 	{
 		glStencilFunc(GL_ALWAYS, 1, 0xFF);

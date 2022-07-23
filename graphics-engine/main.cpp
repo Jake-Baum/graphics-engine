@@ -17,23 +17,23 @@ const int WINDOW_WIDTH = 800;
 const int WINDOW_HEIGHT = 600;
 
 const std::vector<Vertex> CUBE_VERTICES = {
-	{glm::vec3(-0.5f, -0.5f, 0.5f), glm::normalize(glm::vec3(-1.0f, -1.0f, 1.0f)), glm::vec2()},
-	{glm::vec3(-0.5f, 0.5f, 0.5f), glm::normalize(glm::vec3(-1.0f, 1.0f, 1.0f)), glm::vec2()},
-	{glm::vec3(0.5f, 0.5f, 0.5f), glm::normalize(glm::vec3(1.0f, 1.0f, 1.0f)), glm::vec2()},
-	{glm::vec3(0.5f, -0.5f, 0.5f), glm::normalize(glm::vec3(1.0f, -1.0f, 1.0f)), glm::vec2()},
-	{glm::vec3(-0.5f, -0.5f, -0.5f), glm::normalize(glm::vec3(-1.0f, -1.0f, -1.0f)), glm::vec2()},
-	{glm::vec3(-0.5f, 0.5f, -0.5f), glm::normalize(glm::vec3(-1.0f, 1.0f, -1.0f)), glm::vec2()},
-	{glm::vec3(0.5f, 0.5f, -0.5f), glm::normalize(glm::vec3(1.0f, 1.0f, -1.0f)), glm::vec2()},
-	{glm::vec3(0.5f, -0.5f, -0.5f), glm::normalize(glm::vec3(1.0f, -1.0f, -1.0f)), glm::vec2()}
+	{glm::vec3(-0.5f, -0.5f, 0.5f), glm::normalize(glm::vec3(-1.0f, -1.0f, 1.0f)), glm::vec2(0.0f, 0.0f)},
+	{glm::vec3(0.5f, -0.5f, 0.5f), glm::normalize(glm::vec3(1.0f, -1.0f, 1.0f)), glm::vec2(1.0f, 0.0f)},
+	{glm::vec3(0.5f, 0.5f, 0.5f), glm::normalize(glm::vec3(1.0f, 1.0f, 1.0f)), glm::vec2(1.0f, 1.0f)},
+	{glm::vec3(-0.5f, 0.5f, 0.5f), glm::normalize(glm::vec3(-1.0f, 1.0f, 1.0f)), glm::vec2(0.0f, 1.0f)},
+	{glm::vec3(-0.5f, -0.5f, -0.5f), glm::normalize(glm::vec3(-1.0f, -1.0f, -1.0f)), glm::vec2(0.0f, 0.0f)},
+	{glm::vec3(0.5f, -0.5f, -0.5f), glm::normalize(glm::vec3(1.0f, -1.0f, -1.0f)), glm::vec2(1.0f, 0.0f)},
+	{glm::vec3(0.5f, 0.5f, -0.5f), glm::normalize(glm::vec3(1.0f, 1.0f, -1.0f)), glm::vec2(1.0f, 1.0f)},
+	{glm::vec3(-0.5f, 0.5f, -0.5f), glm::normalize(glm::vec3(-1.0f, 1.0f, -1.0f)), glm::vec2(0.0f, 1.0f)}
 };
 
 const std::vector<unsigned int> CUBE_INDICES = {0, 1, 2, 0, 2, 3, 4, 5, 1, 4, 1, 0, 7, 6, 5, 7, 5, 4, 3, 2, 6, 3, 6, 7, 4, 0, 3, 4, 3, 7, 1, 5, 6, 1, 6, 2};
 
 const std::vector<Vertex> PLANE_VERTICES = {
-	{glm::vec3(-0.5f, 0.0f, 0.5f),  glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f)},
-	{glm::vec3(-0.5f, 0.0f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 1.0f)},
-	{glm::vec3( 0.5f, 0.0f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 1.0f)},
-	{glm::vec3( 0.5f, 0.0f, 0.5f),  glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f)}
+	{glm::vec3(-0.5f, 0.0f, 0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f)},
+	{glm::vec3(0.5f, 0.0f, 0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f)},
+	{glm::vec3(0.5f, 0.0f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 1.0f)},
+	{glm::vec3(-0.5f, 0.0f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 1.0f)}
 };
 
 const std::vector<unsigned int> PLANE_INDICES = {0, 1, 2, 0, 2, 3};
@@ -71,13 +71,15 @@ int main()
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+		glEnable(GL_CULL_FACE);
+
 		Shader shader("shader.vert", "shader.frag");
 		Shader constantColorShader("shader.vert", "constant-color.frag");
 
 		Model cube = Model(
 			Mesh(
 				std::vector<Vertex>({CUBE_VERTICES}),
-				std::vector<unsigned int>(CUBE_INDICES),
+				std::vector<unsigned int>({CUBE_INDICES}),
 				std::vector<Texture>()
 			)
 		);
@@ -100,17 +102,17 @@ int main()
 		Model plane = Model(
 			Mesh(
 				std::vector<Vertex>({PLANE_VERTICES}),
-				std::vector<unsigned int>(PLANE_INDICES),
+				std::vector<unsigned int>({PLANE_INDICES}),
 				std::vector<Texture>({
 					{
-						Model::constantColorTexture(glm::vec4(128.0f), glm::vec2(644.0f)),
+						Model::constantColorTexture(glm::vec3(128.0f), glm::vec2(64.0f)),
 						Mesh::TEXTURE_SPECULAR,
 						"grey.png"
 					},
 					{
-						Model::constantColorTexture(glm::vec4(200.0f), glm::vec2(64.0f)),
+						Model::constantColorTexture(glm::vec4(0.0f), glm::vec2(64.0f)),
 						Mesh::TEXTURE_SPECULAR,
-						"ligh-grey.png"
+						"black.png"
 					}
 				})
 			)
@@ -125,7 +127,7 @@ int main()
 		Model grass = Model(
 			Mesh(
 				std::vector<Vertex>({PLANE_VERTICES}),
-				std::vector<unsigned int>(PLANE_INDICES),
+				std::vector<unsigned int>({PLANE_INDICES}),
 				std::vector<Texture>({
 					{
 						Model::textureFromFile("grass.png"),
@@ -152,7 +154,7 @@ int main()
 						"blending_transparent_window.png"
 					},
 					{
-						Model::constantColorTexture(glm::vec4(200.0f), glm::vec2(64.0f)),
+						Model::constantColorTexture(glm::vec3(200.0f), glm::vec2(64.0f)),
 						Mesh::TEXTURE_SPECULAR,
 						"light-grey.png"
 					}
@@ -162,17 +164,45 @@ int main()
 
 		std::vector<Object> windows = std::vector<Object>(
 			{
-				Object(transparentWindow, shader, glm::vec3(1.5f, 0.5f, 0.51f), glm::vec3(1.0f), 90.0f, glm::vec3(1.0f, 0.0f, 0.0f), 500.0f),
-				Object(transparentWindow, shader, glm::vec3(0.5f, 0.5f, -0.6f), glm::vec3(1.0f), 90.0f, glm::vec3(1.0f, 0.0f, 0.0f), 500.0f),
-				Object(transparentWindow, shader, glm::vec3(-1.5f, 0.5f, -0.48f), glm::vec3(1.0f), 90.0f, glm::vec3(1.0f, 0.0f, 0.0f), 500.0f),
-				Object(transparentWindow, shader, glm::vec3(-0.3f, 0.5f, -2.3f), glm::vec3(1.0f), 90.0f, glm::vec3(1.0f, 0.0f, 0.0f), 500.0f),
-				Object(transparentWindow, shader, glm::vec3(0.0f, 0.5f, 0.7f), glm::vec3(1.0f), 90.0f, glm::vec3(1.0f, 0.0f, 0.0f), 500.0f),
+				Object(transparentWindow, shader, glm::vec3(1.5f, 0.5f, 0.51f), glm::vec3(1.0f), 90.0f, glm::vec3(1.0f, 0.0f, 0.0f), 500.0f, false),
+				Object(transparentWindow, shader, glm::vec3(0.5f, 0.5f, -0.6f), glm::vec3(1.0f), 90.0f, glm::vec3(1.0f, 0.0f, 0.0f), 500.0f, false),
+				Object(transparentWindow, shader, glm::vec3(-1.5f, 0.5f, -0.48f), glm::vec3(1.0f), 90.0f, glm::vec3(1.0f, 0.0f, 0.0f), 500.0f, false),
+				Object(transparentWindow, shader, glm::vec3(-0.3f, 0.5f, -2.3f), glm::vec3(1.0f), 90.0f, glm::vec3(1.0f, 0.0f, 0.0f), 500.0f, false),
+				Object(transparentWindow, shader, glm::vec3(0.0f, 0.5f, 0.7f), glm::vec3(1.0f), 90.0f, glm::vec3(1.0f, 0.0f, 0.0f), 500.0f, false),
 			}
+		);
+
+		Model texturedCubeModel = Model(
+			Mesh(
+				std::vector<Vertex>({CUBE_VERTICES}),
+				std::vector<unsigned int>({CUBE_INDICES}),
+				std::vector<Texture>({
+					{
+						Model::textureFromFile("blending_transparent_window.png"),
+						Mesh::TEXTURE_DIFFUSE,
+						"blending_transparent_window.png"
+					},
+					{
+						Model::constantColorTexture(glm::vec3(200.0f), glm::vec2(64.0f)),
+						Mesh::TEXTURE_SPECULAR,
+						"light-grey.png"
+					}
+				})
+			)
+		);
+		Object texturedCube = Object(
+			texturedCubeModel,
+			shader,
+			glm::vec3(0.0f, 2.0f, 2.0f),
+			glm::vec3(1.0f),
+			0.0f, 
+			glm::vec3(0.0f, 1.0f, 0.0f),
+			64.0f
 		);
 
 		std::vector<Object> objects = std::vector<Object>(
 			{
-				backpack, floor
+				backpack, floor, texturedCube
 			}
 		);
 		objects.insert(objects.end(), windows.begin(), windows.end());
@@ -210,7 +240,7 @@ int main()
 			light.draw();
 
 			//Draw objects
-			std::map<float, Object> sorted;
+			std::multimap<float, Object> sorted;
 			for (auto& object : objects)
 			{
 				float distance = glm::length(camera.position - object.getPosition());

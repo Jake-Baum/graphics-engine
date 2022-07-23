@@ -127,21 +127,6 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType 
 	return textures;
 }
 
-unsigned int Model::constantColorTexture(glm::vec4 color, glm::vec2 dimensions)
-{
-	std::vector<unsigned char> data;
-
-	for (int i = 0; i < dimensions.x * dimensions.y; i++)
-	{
-		for (int j = 0; j < 4; j++)
-		{
-			data.push_back(color[j]);
-		}
-	}
-
-	return generateAndBindTexture(&data[0], GL_RGBA, dimensions.x, dimensions.y);
-}
-
 
 unsigned int Model::textureFromFile(const char* path)
 {
@@ -176,6 +161,26 @@ unsigned int Model::textureFromFile(const char* path)
 	stbi_image_free(data);
 
 	return texture;
+}
+
+unsigned int Model::constantColorTexture(glm::vec3 color, glm::vec2 dimensions)
+{
+	return constantColorTexture(glm::vec4(color, 255.0f), dimensions);
+}
+
+unsigned int Model::constantColorTexture(glm::vec4 color, glm::vec2 dimensions)
+{
+	std::vector<unsigned char> data;
+
+	for (int i = 0; i < dimensions.x * dimensions.y; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			data.push_back(color[j]);
+		}
+	}
+
+	return generateAndBindTexture(&data[0], GL_RGBA, dimensions.x, dimensions.y);
 }
 
 unsigned int Model::generateAndBindTexture(unsigned char* data, GLenum format, unsigned int width, unsigned int height)
