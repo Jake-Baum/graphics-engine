@@ -121,3 +121,44 @@ void Shader::setVec4(const std::string& name, glm::vec4 vector) const
 {
 	glUniform4fv(glGetUniformLocation(id, name.c_str()), 1, glm::value_ptr(vector));
 }
+
+void Shader::resetLights()
+{
+	numDirectionalLights = 0;
+	numPointLights = 0;
+}
+
+void Shader::addDirectionalLight(DirectionalLight light)
+{
+	if (numDirectionalLights >= 8)
+	{
+		throw - 1;
+	}
+
+	setInt("numberOfDirectionalLights", numDirectionalLights + 1);
+	setVec3("directionalLights[" + std::to_string(numDirectionalLights) + "].direction", glm::vec3(1.0f, -1.0f, -1.0f));
+	setVec3("directionalLights[" + std::to_string(numDirectionalLights) + "].ambient", light.ambientColor);
+	setVec3("directionalLights[" + std::to_string(numDirectionalLights) + "].diffuse", light.diffuseColor);
+	setVec3("directionalLights[" + std::to_string(numDirectionalLights) + "].specular", glm::vec3(1.0f));
+
+	numDirectionalLights++;
+}
+
+void Shader::addPointLight(PointLight light)
+{
+	if (numPointLights >= 8)
+	{
+		throw - 1;
+	}
+
+	setInt("numberOfPointLights", numPointLights + 1);
+	setVec3("pointLights[" + std::to_string(numPointLights) + "].position", light.position);
+	setFloat("pointLights[" + std::to_string(numPointLights) + "].constant", 1.0f);
+	setFloat("pointLights[" + std::to_string(numPointLights) + "].linear", 0.1f);
+	setFloat("pointLights[" + std::to_string(numPointLights) + "].quadratic", 0.01f);
+	setVec3("pointLights[" + std::to_string(numPointLights) + "].ambient", light.ambientColor);
+	setVec3("pointLights[" + std::to_string(numPointLights) + "].diffuse", light.diffuseColor);
+	setVec3("pointLights[" + std::to_string(numPointLights) + "].specular", glm::vec3(1.0f));
+
+	numPointLights++;
+}

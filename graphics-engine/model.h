@@ -19,7 +19,6 @@ public:
 
 	Model(const char* path);
 	Model(std::vector<Mesh> meshes);
-	Model(Mesh meshes...);
 
 	static unsigned int textureFromFile(const char* path);
 	static unsigned int constantColorTexture(glm::vec3 color, glm::vec2 dimensions);

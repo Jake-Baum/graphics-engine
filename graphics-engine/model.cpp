@@ -10,9 +10,6 @@ Model::Model(std::vector<Mesh> meshes)
 	this->meshes = meshes;
 }
 
-Model::Model(Mesh meshes ...) : Model(std::vector<Mesh>({meshes}))
-{}
-
 void Model::draw(Shader& shader)
 {
 	for (unsigned int i = 0; i < meshes.size(); i++) {

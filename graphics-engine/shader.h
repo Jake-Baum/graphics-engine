@@ -12,6 +12,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "directional_light.h"
+#include "point_light.h"
+
 class Shader
 {
 public:
@@ -29,8 +32,16 @@ public:
 	void setVec3(const std::string& name, glm::vec3 vector) const;
 	void setVec4(const std::string& name, glm::vec4 vector) const;
 
+	void resetLights();
+	void addDirectionalLight(DirectionalLight light);
+	void addPointLight(PointLight light);
+
 private:
 	static const unsigned int INFO_LOG_MAX_LENGTH = 512;
+
+	unsigned int numDirectionalLights;
+	unsigned int numPointLights;
+
 	static unsigned int compileShader(const char* shaderSource, GLenum type);
 	static unsigned int createShaderProgram(const std::vector<unsigned int> shaders);
 };

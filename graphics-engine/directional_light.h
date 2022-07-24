@@ -1,21 +1,13 @@
 #ifndef DIRECTIONAL_LIGHT_H
 #define DIRECTIONAL_LIGHT_H
 
-#include "shader.h"
+#include <glm/glm.hpp>
 
 class DirectionalLight
 {
 public:
-	DirectionalLight(glm::vec3 color, glm::vec3 direction, Shader& lightingShader);
-	~DirectionalLight();
+	DirectionalLight(glm::vec3 color, glm::vec3 direction);
 
-	void setLightUniforms();
-
-private:
-	static int numberOfLights;
-	static int currentLight;
-
-	Shader* lightingShader;
 	glm::vec3 direction;
 	glm::vec3 diffuseColor;
 	glm::vec3 ambientColor;

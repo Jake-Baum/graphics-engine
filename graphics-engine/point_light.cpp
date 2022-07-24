@@ -1,43 +1,8 @@
 #include "point_light.h"
 
-int PointLight::numberOfLights = 0;
-int PointLight::currentLight = 0;
-
-PointLight::PointLight(glm::vec3 color, glm::vec3 position, Shader& lightingShader)
+PointLight::PointLight(glm::vec3 color, glm::vec3 position)
 {
-	numberOfLights++;
 	diffuseColor = color * glm::vec3(0.5f);
 	ambientColor = diffuseColor * glm::vec3(0.5f);
 	this->position = position;
-	this->lightingShader = &lightingShader;
-}
-
-PointLight::~PointLight()
-{
-	numberOfLights--;
-}
-
-void PointLight::setLightUniforms()
-{
-	if (currentLight >= 8)
-	{
-		throw -1;
-	}
-
-	lightingShader->use();
-
-	lightingShader->setInt("numberOfPointLights", currentLight + 1);
-	lightingShader->setVec3("pointLights[" + std::to_string(currentLight) + "].position", position);
-	lightingShader->setFloat("pointLights[" + std::to_string(currentLight) + "].constant", 1.0f);
-	lightingShader->setFloat("pointLights[" + std::to_string(currentLight) + "].linear", 0.1f);
-	lightingShader->setFloat("pointLights[" + std::to_string(currentLight) + "].quadratic", 0.01f);
-	lightingShader->setVec3("pointLights[" + std::to_string(currentLight) + "].ambient", ambientColor);
-	lightingShader->setVec3("pointLights[" + std::to_string(currentLight) + "].diffuse", diffuseColor);
-	lightingShader->setVec3("pointLights[" + std::to_string(currentLight) + "].specular", glm::vec3(1.0f));
-
-	currentLight++;
-	if (currentLight >= numberOfLights)
-	{
-		currentLight = 0;
-	}
 }

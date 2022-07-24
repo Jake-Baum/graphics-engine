@@ -1,21 +1,13 @@
 #ifndef POINT_LIGHT_H
 #define POINT_LIGHT_H
 
-#include "shader.h"
+#include <glm/glm.hpp>
 
 class PointLight
 {
 public:
-	PointLight(glm::vec3 color, glm::vec3 position, Shader& lightingShader);
-	~PointLight();
+	PointLight(glm::vec3 color, glm::vec3 position);
 
-	void setLightUniforms();
-
-private:
-	static int numberOfLights;
-	static int currentLight;
-
-	Shader* lightingShader;
 	glm::vec3 position;
 	glm::vec3 diffuseColor;
 	glm::vec3 ambientColor;

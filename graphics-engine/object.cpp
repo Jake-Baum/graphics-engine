@@ -9,9 +9,6 @@ Object::Object(Model model, Shader& shader, glm::vec3 position, glm::vec3 scale,
 	this->modelMatrix = glm::scale(this->modelMatrix, scale);
 }
 
-Object::Object(Model model, Shader& shader, float shininess): Object(model, shader, glm::vec3(0.0f), glm::vec3(1.0f), 0.0f, glm::vec3(0.0f, 1.0f, 0.0f), shininess)
-{}
-
 void Object::draw()
 {
 	if (shouldCullBackFaces)
@@ -51,19 +48,14 @@ void Object::draw()
 		glClear(GL_STENCIL_BUFFER_BIT);
 		glStencilMask(0x00);
 	}
-
-	for (int i = 0; i < directionalLights.size(); i++)
-	{
-		directionalLights[i].setLightUniforms();
-	}
-
-	for (int i = 0; i < pointLights.size(); i++)
-	{
-		pointLights[i].setLightUniforms();
-	}
 }
 
 glm::vec3 Object::getPosition()
 {
 	return position;
+}
+
+Shader* Object::getShader()
+{
+	return shader;
 }

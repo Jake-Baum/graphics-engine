@@ -20,11 +20,10 @@ public:
 				 float shininess = 0.0f,
 				 bool shouldCullBackFaces = true);
 
-	Object(Model model, Shader& shader, float shininess);
-
 	void draw();
-	
+
 	glm::vec3 getPosition();
+	Shader* getShader();
 
 	std::optional<Shader*> outlineShader;
 	std::vector<DirectionalLight> directionalLights;

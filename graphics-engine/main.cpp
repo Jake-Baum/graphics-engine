@@ -1,6 +1,4 @@
 #include <iostream>
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
 #include <vector>
 #include <map>
 #include <glm/glm.hpp>
@@ -12,6 +10,7 @@
 #include "camera.h"
 #include "model.h"
 #include "object.h"
+#include "scene.h"
 
 const int WINDOW_WIDTH = 800;
 const int WINDOW_HEIGHT = 600;
@@ -76,30 +75,30 @@ int main()
 		Shader shader("shader.vert", "shader.frag");
 		Shader constantColorShader("shader.vert", "constant-color.frag");
 
-		Model cube = Model(
+		Model cube({
 			Mesh(
 				std::vector<Vertex>({CUBE_VERTICES}),
 				std::vector<unsigned int>({CUBE_INDICES}),
 				std::vector<Texture>()
 			)
-		);
-		Object light = Object(
+		});
+		Object light(
 			cube,
 			constantColorShader,
 			glm::vec3(0.7f, 0.2f, 2.0f),
 			glm::vec3(0.1f)
 		);
-		DirectionalLight directionalLight = DirectionalLight(glm::vec3(1.0f), glm::vec3(1.0f, -1.0f, -1.0f), shader);
-		PointLight pointLight = PointLight(glm::vec3(1.0f), light.getPosition(), shader);
+		DirectionalLight directionalLight(glm::vec3(1.0f), glm::vec3(1.0f, -1.0f, -1.0f));
+		PointLight pointLight(glm::vec3(1.0f), light.getPosition());
 		light.pointLights = std::vector({pointLight});
 		light.directionalLights = std::vector({directionalLight});
 
 		std::cout << "Loading model..." << std::endl;
-		Object backpack = Object(Model("backpack.obj"), shader, glm::vec3(0.0f, 0.5f, -1.0f), glm::vec3(0.2f), 0.0f, glm::vec3(0.0f, 1.0f, 0.0f), 64.0f);
+		Object backpack(Model("backpack.obj"), shader, glm::vec3(0.0f, 0.5f, -1.0f), glm::vec3(0.2f), 0.0f, glm::vec3(0.0f, 1.0f, 0.0f), 64.0f);
 		backpack.outlineShader = std::optional(&constantColorShader);
 		std::cout << "Model Loaded" << std::endl;
 
-		Model plane = Model(
+		Model plane({
 			Mesh(
 				std::vector<Vertex>({PLANE_VERTICES}),
 				std::vector<unsigned int>({PLANE_INDICES}),
@@ -116,15 +115,15 @@ int main()
 					}
 				})
 			)
-		);
-		Object floor = Object(
+		});
+		Object floor(
 			plane,
 			shader,
 			glm::vec3(0.0f),
 			glm::vec3(10.0f)
 		);
 
-		Model grass = Model(
+		Model grass({
 			Mesh(
 				std::vector<Vertex>({PLANE_VERTICES}),
 				std::vector<unsigned int>({PLANE_INDICES}),
@@ -141,9 +140,9 @@ int main()
 					}
 				})
 			)
-		);
+		});
 
-		Model transparentWindow = Model(
+		Model transparentWindow({
 			Mesh(
 				std::vector<Vertex>({PLANE_VERTICES}),
 				std::vector<unsigned int>(PLANE_INDICES),
@@ -160,9 +159,9 @@ int main()
 					}
 				})
 			)
-		);
+		});
 
-		std::vector<Object> windows = std::vector<Object>(
+		std::vector<Object> windows(
 			{
 				Object(transparentWindow, shader, glm::vec3(1.5f, 0.5f, 0.51f), glm::vec3(1.0f), 90.0f, glm::vec3(1.0f, 0.0f, 0.0f), 500.0f, false),
 				Object(transparentWindow, shader, glm::vec3(0.5f, 0.5f, -0.6f), glm::vec3(1.0f), 90.0f, glm::vec3(1.0f, 0.0f, 0.0f), 500.0f, false),
@@ -172,7 +171,7 @@ int main()
 			}
 		);
 
-		Model texturedCubeModel = Model(
+		Model texturedCubeModel({
 			Mesh(
 				std::vector<Vertex>({CUBE_VERTICES}),
 				std::vector<unsigned int>({CUBE_INDICES}),
@@ -189,8 +188,8 @@ int main()
 					}
 				})
 			)
-		);
-		Object texturedCube = Object(
+		});
+		Object texturedCube(
 			texturedCubeModel,
 			shader,
 			glm::vec3(0.0f, 2.0f, 2.0f),
@@ -200,12 +199,9 @@ int main()
 			64.0f
 		);
 
-		std::vector<Object> objects = std::vector<Object>(
-			{
-				backpack, floor, texturedCube
-			}
-		);
-		objects.insert(objects.end(), windows.begin(), windows.end());
+		Scene scene(shader, camera);
+		scene.addObjects({light, backpack, floor, texturedCube});
+		scene.addObjects(windows);
 		
 		//Rendering loop
 		while (!glfwWindowShouldClose(window))
@@ -222,34 +218,7 @@ int main()
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 			glStencilMask(0x00);
 
-			//Set projection and view
-			glm::mat4 projection = glm::perspective(glm::radians(camera.zoom), (float)WINDOW_WIDTH / WINDOW_HEIGHT, 0.1f, 100.0f);
-
-			constantColorShader.use();
-			constantColorShader.setMat4("view", camera.getViewMatrix());
-			constantColorShader.setMat4("projection", projection);
-
-			shader.use();
-			shader.setMat4("projection", projection);
-			shader.setMat4("view", camera.getViewMatrix());
-			shader.setVec3("viewPosition", camera.position);
-			
-			//Draw point light
-			constantColorShader.use();
-			constantColorShader.setVec4("color", glm::vec4(1.0f));
-			light.draw();
-
-			//Draw objects
-			std::multimap<float, Object> sorted;
-			for (auto& object : objects)
-			{
-				float distance = glm::length(camera.position - object.getPosition());
-				sorted.insert(std::make_pair(distance, object));
-			}
-			for (std::map<float, Object>::reverse_iterator it = sorted.rbegin(); it != sorted.rend(); ++it)
-			{
-				it->second.draw();
-			}
+			scene.draw(window);
 
 			glBindVertexArray(0);
 			
