@@ -1,11 +1,8 @@
 #version 460 core
 
 struct Material {
-  sampler2D textureDiffuse1;
-  sampler2D textureDiffuse2;
-  sampler2D textureDiffuse3;
-  sampler2D textureSpecular1;
-  sampler2D textureSpecular2;
+  sampler2D textureDiffuse;
+  sampler2D textureSpecular;
   float shininess;
 };
 
@@ -76,9 +73,9 @@ vec4 calculateDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir
   vec3 reflectDirection = reflect(-lightDirection, normal);
   float spec = pow(max(dot(viewDirection, reflectDirection), 0.0), material.shininess);
   
-  vec4 ambient = vec4(light.ambient, 1.0) * texture(material.textureDiffuse1, textureCoords);
-  vec4 diffuse = vec4(light.diffuse, 1.0) * diff * texture(material.textureDiffuse1, textureCoords);
-  vec4 specular = material.shininess != 0 ? vec4(light.specular, 1.0) * spec * texture(material.textureSpecular1, textureCoords) : vec4(0);
+  vec4 ambient = vec4(light.ambient, 1.0) * texture(material.textureDiffuse, textureCoords);
+  vec4 diffuse = vec4(light.diffuse, 1.0) * diff * texture(material.textureDiffuse, textureCoords);
+  vec4 specular = material.shininess != 0 ? vec4(light.specular, 1.0) * spec * texture(material.textureSpecular, textureCoords) : vec4(0);
   return ambient + diffuse + specular;
 }
 
@@ -93,9 +90,9 @@ vec4 calculatePointLight(PointLight light, vec3 normal, vec3 fragPosition, vec3 
   float distance = length(light.position - fragPosition);
   float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));    
 
-  vec4 ambient = vec4(light.ambient, 1.0) * texture(material.textureDiffuse1, textureCoords);
-  vec4 diffuse = vec4(light.diffuse, 1.0) * diff * texture(material.textureDiffuse1, textureCoords);
-  vec4 specular = material.shininess != 0 ? vec4(light.specular, 1.0) * spec * texture(material.textureSpecular1, textureCoords): vec4(0);
+  vec4 ambient = vec4(light.ambient, 1.0) * texture(material.textureDiffuse, textureCoords);
+  vec4 diffuse = vec4(light.diffuse, 1.0) * diff * texture(material.textureDiffuse, textureCoords);
+  vec4 specular = material.shininess != 0 ? vec4(light.specular, 1.0) * spec * texture(material.textureSpecular, textureCoords): vec4(0);
   ambient *= attenuation;
   diffuse *= attenuation;
   specular *= attenuation;
