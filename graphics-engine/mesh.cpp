@@ -12,6 +12,11 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std:
     setUpMesh();
 }
 
+Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices) : Mesh(vertices, indices, {})
+{
+
+}
+
 void Mesh::draw(Shader& shader)
 {
   unsigned int diffuseNr = 1;

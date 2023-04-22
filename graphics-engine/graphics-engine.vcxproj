@@ -149,7 +149,9 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\Users\Jake\Downloads\glad\src\glad.c" />
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="cube.cpp" />
     <ClCompile Include="directional_light.cpp" />
+    <ClCompile Include="plane.cpp" />
     <ClCompile Include="point_light.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mesh.cpp" />
@@ -161,7 +163,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
+    <ClInclude Include="cube.h" />
     <ClInclude Include="directional_light.h" />
+    <ClInclude Include="plane.h" />
     <ClInclude Include="point_light.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="model.h" />

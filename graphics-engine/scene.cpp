@@ -21,7 +21,7 @@ void Scene::draw(GLFWwindow* window)
 		float distance = glm::length(camera->position - object.getPosition());
 		sorted.insert(std::make_pair(distance, object));
 
-		if (shaders.find(object.getShader()) == shaders.end())
+		if (object.getShader() != nullptr && shaders.find(object.getShader()) == shaders.end())
 		{
 			shaders.insert(object.getShader());
 			object.getShader()->use();
