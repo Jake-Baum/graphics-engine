@@ -13,6 +13,7 @@
 #include "scene.h"
 #include "plane.h"
 #include "cube.h"
+#include "sphere.h"
 
 const int WINDOW_WIDTH = 800;
 const int WINDOW_HEIGHT = 600;
@@ -65,10 +66,14 @@ int main()
 		light.directionalLights = std::vector({directionalLight});
 
 		Plane plane(shader, glm::vec3(0.0f), glm::vec3(10.0f));
-		Cube cube(shader, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f));
+		Cube cube(shader, glm::vec3(0.0f, 1.0f, 0.0f));
+		Sphere manyPoints(shader, 100, 100, glm::vec3(0.0f, 4.0f, 0.0f));
+		Sphere highStack(shader, 100, 5, glm::vec3(2.0f, 4.0f, 0.0f));
+		Sphere highSlices(shader, 5, 100, glm::vec3(4.0f, 4.0f, 0.0f));
+		Sphere fewPoints(shader, 5, 5, glm::vec3(6.0f, 4.0f, 0.0f));
 
 		Scene scene(shader, camera);
-		scene.addObjects({light, plane, cube});
+		scene.addObjects({light, plane, cube, manyPoints, highStack, highSlices, fewPoints});
 		
 		//Rendering loop
 		while (!glfwWindowShouldClose(window))
