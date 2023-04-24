@@ -1,5 +1,17 @@
 #include "object.h"
 
+const glm::vec3 Object::DEFAULT_POSITION = glm::vec3();
+
+const glm::vec3 Object::DEFAULT_SCALE = glm::vec3(1.0f);
+
+const float Object::DEFAULT_ROTATION = 0.0f;
+
+const glm::vec3 Object::DEFAULT_ROTATION_AXIS = glm::vec3(0.0f, 1.0f, 0.0f);
+
+const float Object::DEFAULT_SHININESS = 64.0f;
+
+const float Object::DEFAULT_SHOULD_CULL_BACK_FACES = false;
+
 Object::Object(Model model, Shader& shader, glm::vec3 position, glm::vec3 scale, float rotation, glm::vec3 rotationAxis, float shininess, bool shouldCullBackFaces) :
 	model(model), position(position), scale(scale), rotation(rotation), rotationAxis(rotationAxis), shininess(shininess), shouldCullBackFaces(shouldCullBackFaces)
 {

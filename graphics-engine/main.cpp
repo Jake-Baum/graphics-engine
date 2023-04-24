@@ -56,7 +56,7 @@ int main()
 		Shader shader("shader.vert", "shader.frag");
 		Shader constantColorShader("shader.vert", "constant-color.frag");
 
-		Object light(
+		Cube light(constantColorShader,
 			glm::vec3(0.7f, 0.2f, 2.0f),
 			glm::vec3(0.1f)
 		);
@@ -65,15 +65,19 @@ int main()
 		light.pointLights = std::vector({pointLight});
 		light.directionalLights = std::vector({directionalLight});
 
+		Cube greenLight(constantColorShader, glm::vec3(-1.0f, 1.0f, -10.0f));
+		PointLight greenPointLight(glm::vec3(0.0f, 1.0f, 0.0f), greenLight.getPosition());
+		greenLight.pointLights = std::vector({pointLight});
+
+
 		Plane plane(shader, glm::vec3(0.0f), glm::vec3(10.0f));
 		Cube cube(shader, glm::vec3(0.0f, 1.0f, 0.0f));
-		Sphere manyPoints(shader, 100, 100, glm::vec3(0.0f, 4.0f, 0.0f));
-		Sphere highStack(shader, 100, 5, glm::vec3(2.0f, 4.0f, 0.0f));
-		Sphere highSlices(shader, 5, 100, glm::vec3(4.0f, 4.0f, 0.0f));
-		Sphere fewPoints(shader, 5, 5, glm::vec3(6.0f, 4.0f, 0.0f));
+		Sphere manyPoints(shader, 100, glm::vec3(2.0f, 1.0f, 0.0f));
+		Sphere fewPoints(shader, 5, glm::vec3(4.0f, 1.0f, 0.0f));
+		Sphere evenFewerPoints(shader, 3, glm::vec3(6.0f, 1.0f, 0.0f));
 
 		Scene scene(shader, camera);
-		scene.addObjects({light, plane, cube, manyPoints, highStack, highSlices, fewPoints});
+		scene.addObjects({light, plane, cube, manyPoints, fewPoints, evenFewerPoints});
 		
 		//Rendering loop
 		while (!glfwWindowShouldClose(window))

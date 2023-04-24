@@ -13,24 +13,31 @@ class Object
 public:
 	Object(Model model,
 				 Shader& shader,
-				 glm::vec3 position = glm::vec3(0.0f),
-				 glm::vec3 scale = glm::vec3(1.0f),
-				 float rotation = 0.0f,
-				 glm::vec3 rotationAxis = glm::vec3(0.0f, 1.0f, 0.0f),
-				 float shininess = 0.0f,
-				 bool shouldCullBackFaces = true);
+				 glm::vec3 position = DEFAULT_POSITION,
+				 glm::vec3 scale = DEFAULT_SCALE,
+				 float rotation = DEFAULT_ROTATION,
+				 glm::vec3 rotationAxis = DEFAULT_ROTATION_AXIS,
+				 float shininess = DEFAULT_SHININESS,
+				 bool shouldCullBackFaces = DEFAULT_SHOULD_CULL_BACK_FACES);
 
-	Object(glm::vec3 position = glm::vec3(0.0f),
-				 glm::vec3 scale = glm::vec3(1.0f),
-				 float rotation = 0.0f,
-				 glm::vec3 rotationAxis = glm::vec3(0.0f, 1.0f, 0.0f),
-				 float shininess = 0.0f,
-				 bool shouldCullBackFaces = true);
+	Object(glm::vec3 position = DEFAULT_POSITION,
+				 glm::vec3 scale = DEFAULT_SCALE,
+				 float rotation = DEFAULT_ROTATION,
+				 glm::vec3 rotationAxis = DEFAULT_ROTATION_AXIS,
+				 float shininess = DEFAULT_SHININESS,
+				 bool shouldCullBackFaces = DEFAULT_SHOULD_CULL_BACK_FACES);
 
 	void draw();
 
 	glm::vec3 getPosition();
 	Shader* getShader();
+
+	static const glm::vec3 DEFAULT_POSITION;
+	static const glm::vec3 DEFAULT_SCALE;
+	static const float DEFAULT_ROTATION;
+	static const glm::vec3 DEFAULT_ROTATION_AXIS;
+	static const float DEFAULT_SHININESS;
+	static const float DEFAULT_SHOULD_CULL_BACK_FACES;
 
 	std::optional<Shader*> outlineShader;
 	std::vector<DirectionalLight> directionalLights;

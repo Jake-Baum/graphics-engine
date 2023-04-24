@@ -1,15 +1,14 @@
 #include "sphere.h"
 
 Sphere::Sphere(Shader& shader,
-							 unsigned int stacksNumber,
-							 unsigned int slicesNumber,
+							 unsigned int detailLevel,
 							 glm::vec3 position,
 							 glm::vec3 scale,
 							 float rotation,
 							 glm::vec3 rotationAxis,
 							 float shininess,
 							 bool shouldCullBackFaces) :
-	Object(Model({createMesh(stacksNumber, slicesNumber)}), shader, position, scale, rotation, rotationAxis, shininess, shouldCullBackFaces)
+	Object(Model({createMesh(detailLevel, detailLevel)}), shader, position, scale, rotation, rotationAxis, shininess, shouldCullBackFaces)
 {};
 
 Mesh Sphere::createMesh(unsigned int stacksNumber, unsigned int slicesNumber)
@@ -17,7 +16,7 @@ Mesh Sphere::createMesh(unsigned int stacksNumber, unsigned int slicesNumber)
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices;
 
-	vertices.push_back({glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), glm::vec2()});
+	vertices.push_back({glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2()});
 
 	for (int i = 0; i < stacksNumber - 1; i++)
 	{
@@ -38,7 +37,7 @@ Mesh Sphere::createMesh(unsigned int stacksNumber, unsigned int slicesNumber)
 		}
 	}
 
-	vertices.push_back({glm::vec3(0, -1, 0), glm::vec3(0, -1, 0), glm::vec2()});
+	vertices.push_back({glm::vec3(0.0f, -1.0f, 0.0f), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec2()});
 
 	for (int i = 0; i < slicesNumber; i++)
 	{
